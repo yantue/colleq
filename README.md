@@ -5,3 +5,9 @@
 ![Last Commit](https://img.shields.io/github/last-commit/yantue/colleq)
 
 Colleq is a self-hostable media library management system designed to manage and track personal collections of movies, books, and music.
+
+## :package: Features (planned)
+-Track movies/books/music instances in a collection
+
+## :page_facing_up: License
+MIT
