@@ -1,16 +1,21 @@
 @startuml
 skinparam classAttributeIconSize 0
 
-class Series <<AggregateRoot>> {
+class Franchise <<AggregateRoot>> {
     +Id: UUID
     +Title: string
+}
+
+class FranchiseMembership <<Entity>> {
+    +MediaWorkId: UUID
+    +FranchiseId: UUID
+    +OrderInFranchise: int
 }
 
 abstract class MediaWork <<AggregateRoot>> {
     +Id: UUID
     +Title: string
     +OriginalReleaseDate: LocalDate
-    +SeriesId: UUID
     -_editions: List<Edition>
     -_contributions: List<Contribution>
     --
@@ -36,14 +41,14 @@ class MovieEdition {
     +SubtitleTracks: List<string>
 }
 
-enum MovieMedium {
+enum VideoMedium {
     DVD
     BluRay
     UHD
     Digital
 }
 
-enum MovieCase {
+enum VideoCase {
     Standard
     Steelbook
     Digipack
@@ -58,13 +63,14 @@ class AudioTrack <<ValueObject>> {
     +Format: string
 }
 
-MediaWork ..> Series
+Franchise "1" *-- "0..*" FranchiseMembership
+MediaWork "1" *-- "0..*" FranchiseMembership
 MediaWork "1" *-- "0..*" Edition
 Movie --|> MediaWork
 Edition <|-- MovieEdition
 MovieEdition "0..*" *-- "0..*" AudioTrack
-MovieEdition --> MovieMedium
-MovieEdition --> MovieCase
+MovieEdition --> VideoMedium
+MovieEdition --> VideoCase
 
 class Contributor <<AggregateRoot>> {
     +Id: UUID
