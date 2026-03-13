@@ -1,0 +1,120 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+class Franchise <<AggregateRoot>> {
+    +Id: UUID
+    +Title: string
+}
+
+class FranchiseMembership <<Entity>> {
+    +MediaWorkId: UUID
+    +FranchiseId: UUID
+    +OrderInFranchise: int
+}
+
+abstract class MediaWork <<AggregateRoot>> {
+    +Id: UUID
+    +Title: string
+    +OriginalReleaseDate: LocalDate
+    -_editions: List<Edition>
+    -_contributions: List<Contribution>
+    --
+    +AddEdition(id): void
+    +RemoveEdition(id): void
+    +AddContribution(id, role): void
+    +RemoveContribution(id): void
+}
+
+class Movie
+
+abstract class Edition <<Entity>> {
+    +Id: UUID
+    +ReleaseDate: LocalDate
+    +Extras: List<string>
+}
+
+class MovieEdition {
+    +RuntimeMinutes: int
+    +Medium: MovieMedium
+    +Case: MovieCase
+    +AudioTracks: List<AudioTrack>
+    +SubtitleTracks: List<string>
+}
+
+enum VideoMedium {
+    DVD
+    BluRay
+    UHD
+    Digital
+}
+
+enum VideoCase {
+    Standard
+    Steelbook
+    Digipack
+    Slipcover
+    Boxset
+    Mediabook
+    Other
+}
+
+class AudioTrack <<ValueObject>> {
+    +Language: string
+    +Format: string
+}
+
+Franchise "1" *-- "0..*" FranchiseMembership
+MediaWork "1" *-- "0..*" FranchiseMembership
+MediaWork "1" *-- "0..*" Edition
+Movie --|> MediaWork
+Edition <|-- MovieEdition
+MovieEdition "0..*" *-- "0..*" AudioTrack
+MovieEdition --> VideoMedium
+MovieEdition --> VideoCase
+
+class Contributor <<AggregateRoot>> {
+    +Id: UUID
+    +Name: string
+}
+
+class ContributionRole <<ValueObject>> {
+    +Name: string
+    --
+    +IsCreator(): bool
+}
+
+note left of ContributionRole
+Invariant:
+- Role knows whether it
+  is a creator role
+end note
+
+class Contribution <<Entity>> {
+    +Id: UUID
+    +ContributorId: UUID
+    +Role: ContributionRole
+}
+
+MediaWork "1" *-- "1..*" Contribution
+Contribution "1" *-- "1" ContributionRole
+Contribution ..> Contributor
+
+note top of MediaWork
+Invariant:
+- Must have at least one Contribution
+  where Role.IsCreator() == true
+- Cannot remove last creator
+- Cannot remove Edition if MediaCopy
+  exists referencing it
+end note
+
+class MediaCopy <<AggregateRoot>> {
+    +Id: UUID
+    +EditionId: UUID
+    +Format: string
+}
+
+MediaCopy ..> Edition
+
+@enduml
+
