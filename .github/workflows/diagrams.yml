@@ -1,0 +1,43 @@
+name: Generate UML Diagrams
+
+on:
+  push:
+    paths:
+      - "docs/uml/**/*.puml"
+      - "docs/diagrams/**/*.svg"
+  pull_request:
+    paths:
+      - "docs/uml/**/*.puml"
+      - "docs/diagrams/**/*.svg"
+
+jobs:
+  generate-diagrams:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.head_ref || github.ref_name }}
+
+      - name: Install PlantUML + Graphviz
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y plantuml graphviz
+
+      - name: Generate SVG diagrams
+        run: |
+          mkdir -p docs/diagrams
+          plantuml -tsvg docs/uml/*.puml -o ../diagrams
+
+      - name: Commit generated diagrams
+        run: |
+          git config user.name github-actions
+          git config user.email github-action@github.com
+          git add docs/diagrams/*.svg
+          git diff --cached --quiet || git commit -m "Auto-generate UML diagrams"
+          TARGET_BRANCH="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME}}"
+          git push origin HEAD:"$TARGET_BRANCH"
