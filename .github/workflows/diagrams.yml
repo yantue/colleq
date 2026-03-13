@@ -38,6 +38,6 @@ jobs:
           git config user.name github-actions
           git config user.email github-action@github.com
           git add docs/diagrams/*.svg
-          git diff --cached --quiet || git commit -m "Auto-generate UML diagrams"
+          git diff --cached --quiet || git commit -m "Auto-generate UML diagrams [skip ci]"
           TARGET_BRANCH="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME}}"
           git push origin HEAD:"$TARGET_BRANCH"
