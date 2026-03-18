@@ -40,6 +40,7 @@ class MovieEdition {
     +RuntimeMinutes: int
     +Medium: VideoMedium
     +Case: VideoCase
+    +DiscCount: int
     +AudioTracks: List<AudioTrack>
     +SubtitleTracks: List<string>
 }
@@ -64,6 +65,7 @@ class TVShowEdition {
     +SeasonIds: List<UUID>
     +Medium: VideoMedium
     +Case: VideoCase
+    +DiscCount: int
     +AudioTracks: List<AudioTrack>
     +SubtitleTracks: List<string>
 }
