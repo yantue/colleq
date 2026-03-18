@@ -91,7 +91,7 @@ jobs:
       # Upload diagram patch to fix failed PR locally
       - name: Upload diagram patch
         if: github.event_name == 'pull_request' && steps.diff.outputs.changed == 'true'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: diagram-update-patch
           path: diagram-update.patch
