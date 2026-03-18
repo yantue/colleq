@@ -17,27 +17,82 @@ jobs:
       contents: write
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          ref: ${{ github.head_ref || github.ref_name }}
 
-      - name: Install PlantUML + Graphviz
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y plantuml graphviz
-
-      - name: Generate SVG diagrams
+      # Always regenerate diagrams (source of truth is PUML)
+      # TODO: Optimize SVG generation for large numbers of .puml files (only changes)
+      - name: Generate all SVG diagrams
         run: |
           mkdir -p docs/diagrams
-          plantuml -tsvg docs/uml/*.puml -o ../diagrams
+          
+          find docs/uml -name '*.puml' | sort -f | \
+          xargs -n 10 -P 4 -I{} docker run --rm \
+            -v "$PWD":/workspace -w /workspace \
+            plantuml/plantuml:1.2024.6 \
+            sh -c '
+              for PUML_FILE in {}; do
+                REL_PATH=${PUML_FILE#docs/uml/}
+                OUT_DIR="docs/diagrams/$(dirname "$REL_PATH")"
+          
+                mkdir -p "$OUT_DIR"
+          
+                echo "Generating $PUML_FILE -> $OUT_DIR"
+                plantuml -tsvg -o "$OUT_DIR" "$PUML_FILE"
+              done
+            '
 
+      # Remove orphan SVG diagrams
+      - name: Remove orphan SVG diagrams
+        run: |
+          for svg in $(find docs/diagrams -name '*.svg'); do
+            REL_PATH=${svg#docs/diagrams/}
+            PUML_FILE="docs/uml/${REL_PATH%.svg}.puml"
+            if [ ! -f "$PUML_FILE" ]; then
+              echo "Removing orphaned SVG: $svg"
+              rm "$svg"
+            fi
+          done
+
+      # Detect differences between generated SVGs and existing
+      - name: Detect diagram changes
+        id: diff
+        run: |
+          if git diff --quiet docs/diagrams; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
+
+      # Auto-fix on push
       - name: Commit generated diagrams
+        if: github.event_name == 'push' && steps.diff.outputs.changed == 'true'
         run: |
           git config user.name github-actions
           git config user.email github-action@github.com
-          git add docs/diagrams/*.svg
-          git diff --cached --quiet || git commit -m "Auto-generate UML diagrams [skip ci]"
-          TARGET_BRANCH="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME}}"
-          git push origin HEAD:"$TARGET_BRANCH"
+          git add docs/diagrams
+          git commit -m "Auto-generate UML diagrams"
+          git push
+
+      # Fail PR if diagrams are out of sync
+      - name: Fail PR if diagrams differ and generate patch
+        if: github.event_name == 'pull_request' && steps.diff.outputs.changed == 'true'
+        run: |
+          rm -f diagram-update.patch
+          echo "Diagrams are out of sync with PlantUML sources."
+          git add docs/diagrams
+          git diff --cached > diagram-update.patch
+          echo "A patch file 'diagram-update.patch' has been created."
+          echo "You can apply it locally with:"
+          echo "  git apply diagram-update.patch && git add docs/diagrams && git commit -m 'Update diagrams' && git push"
+          exit 1
+
+      # Upload diagram patch to fix failed PR locally
+      - name: Upload diagram patch
+        if: github.event_name == 'pull_request' && steps.diff.outputs.changed == 'true'
+        uses: actions/upload-artifact@v3
+        with:
+          name: diagram-update-patch
+          path: diagram-update.patch
+          retention-days: 7
