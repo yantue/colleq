@@ -26,6 +26,9 @@ abstract class MediaWork <<AggregateRoot>> {
 }
 
 class Movie
+class TVShow {
+    +EndDate: LocalDate?
+}
 
 abstract class Edition <<Entity>> {
     +Id: UUID
@@ -35,8 +38,32 @@ abstract class Edition <<Entity>> {
 
 class MovieEdition {
     +RuntimeMinutes: int
-    +Medium: MovieMedium
-    +Case: MovieCase
+    +Medium: VideoMedium
+    +Case: VideoCase
+    +AudioTracks: List<AudioTrack>
+    +SubtitleTracks: List<string>
+}
+
+class Season {
+    +Id: UUID
+    +SeasonNumber: int
+    +EpisodeIds: List<UUID>
+    +OriginalReleaseDate: LocalDate
+    +Title: string?
+}
+
+class Episode {
+    +Id: UUID
+    +EpisodeNumber: int
+    +Title: string?
+}
+
+Season "1" *-- "1..*" Episode
+
+class TVShowEdition {
+    +SeasonIds: List<UUID>
+    +Medium: VideoMedium
+    +Case: VideoCase
     +AudioTracks: List<AudioTrack>
     +SubtitleTracks: List<string>
 }
@@ -64,13 +91,26 @@ class AudioTrack <<ValueObject>> {
 }
 
 Franchise "1" *-- "0..*" FranchiseMembership
+
 MediaWork "1" *-- "0..*" FranchiseMembership
 MediaWork "1" *-- "0..*" Edition
+
 Movie --|> MediaWork
+TVShow --|> MediaWork
+
 Edition <|-- MovieEdition
+Edition <|-- TVShowEdition
+
 MovieEdition "0..*" *-- "0..*" AudioTrack
 MovieEdition --> VideoMedium
 MovieEdition --> VideoCase
+
+TVShow "1" *-- "1..*" Season
+
+TVShowEdition ..> Season
+TVShowEdition "0..*" *-- "0..*" AudioTrack
+TVShowEdition --> VideoMedium
+TVShowEdition --> VideoCase
 
 class Contributor <<AggregateRoot>> {
     +Id: UUID
@@ -108,10 +148,14 @@ Invariant:
   exists referencing it
 end note
 
+note top of TVShowEdition
+Invariant:
+- Must reference at least one Season
+end note
+
 class MediaCopy <<AggregateRoot>> {
     +Id: UUID
     +EditionId: UUID
-    +Format: string
 }
 
 MediaCopy ..> Edition
