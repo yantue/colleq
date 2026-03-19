@@ -150,6 +150,7 @@ Invariant:
   exists referencing it
 end note
 
+' TODO: is implied by relation, remove if relation is correct
 note top of TVShowEdition
 Invariant:
 - Must reference at least one Season
@@ -159,6 +160,8 @@ class MediaCopy <<AggregateRoot>> {
     +Id: UUID
     +EditionId: UUID
 }
+
+# TODO
 
 MediaCopy ..> Edition
 
