@@ -109,7 +109,7 @@ MovieEdition --> VideoCase
 
 TVShow "1" *-- "1..*" Season
 
-TVShowEdition ..> Season
+TVShowEdition "1" ..> "1..*" Season
 TVShowEdition "0..*" *-- "0..*" AudioTrack
 TVShowEdition --> VideoMedium
 TVShowEdition --> VideoCase
@@ -139,7 +139,7 @@ class Contribution <<Entity>> {
 
 MediaWork "1" *-- "1..*" Contribution
 Contribution "1" *-- "1" ContributionRole
-Contribution ..> Contributor
+Contribution "1" ..> "1" Contributor
 
 note top of MediaWork
 Invariant:
