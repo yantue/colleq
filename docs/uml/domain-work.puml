@@ -45,17 +45,19 @@ class MovieEdition {
     +SubtitleTracks: List<string>
 }
 
-class Season {
+class Episode <<Entity>> {
     +Id: UUID
-    +SeasonNumber: int
-    +EpisodeIds: List<UUID>
-    +OriginalReleaseDate: LocalDate
+    +EpisodeNumber: int
+    +AirDate: LocalDate
+    +RuntimeMinutes: int
     +Title: string?
 }
 
-class Episode {
+class Season <<Entity>> {
     +Id: UUID
-    +EpisodeNumber: int
+    +SeasonNumber: int
+    +Episode: List<Episode>
+    +OriginalReleaseDate: LocalDate
     +Title: string?
 }
 
@@ -109,7 +111,7 @@ MovieEdition --> VideoCase
 
 TVShow "1" *-- "1..*" Season
 
-TVShowEdition "1" ..> "1..*" Season
+TVShowEdition ..> Season
 TVShowEdition "0..*" *-- "0..*" AudioTrack
 TVShowEdition --> VideoMedium
 TVShowEdition --> VideoCase
@@ -139,7 +141,7 @@ class Contribution <<Entity>> {
 
 MediaWork "1" *-- "1..*" Contribution
 Contribution "1" *-- "1" ContributionRole
-Contribution "1" ..> "1" Contributor
+Contribution ..> Contributor
 
 note top of MediaWork
 Invariant:
@@ -150,7 +152,6 @@ Invariant:
   exists referencing it
 end note
 
-' TODO: is implied by relation, remove if relation is correct
 note top of TVShowEdition
 Invariant:
 - Must reference at least one Season
