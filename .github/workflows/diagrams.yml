@@ -118,7 +118,8 @@ jobs:
       - name: Add PR check summary (failure)
         if: always() && github.event_name == 'pull_request' && steps.diff.outputs.changed == 'true'&& hashFiles('diagram-update.patch') != ''
         run: |
-          SHORT_SHA=$(git rev-parse --short HEAD)
+          SHORT_SHA="${{ github.event.pull_request.head.sha }}"
+          SHORT_SHA=${SHORT_SHA:0:7}
           RUN_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
 
           cat <<EOF >> $GITHUB_STEP_SUMMARY
@@ -155,7 +156,7 @@ jobs:
         with:
           script: |
             const marker = "<!-- uml-diagram-check -->";
-            const shortSha = context.sha.substring(0, 7);
+            const shortSha = context.payload.pull_request.head.sha.substring(0, 7);
             const runUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
 
             const body = `${marker}
@@ -219,7 +220,7 @@ jobs:
             const body = `${marker}
               **UML diagrams are up to date**
 
-              All generated diagrams match the source \`.puml\` files. 🎉
+              All generated diagrams match the source \`.puml\` files.
               `;
 
             const { data: comments } = await github.rest.issues.listComments({
