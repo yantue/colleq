@@ -21,27 +21,26 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Install PlantUML + Graphviz
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y plantuml graphviz
+        
       # Always regenerate diagrams (source of truth is PUML)
       # TODO: Optimize SVG generation for large numbers of .puml files (only changes)
       - name: Generate all SVG diagrams
         run: |
           mkdir -p docs/diagrams
           
-          find docs/uml -name '*.puml' | sort -f | \
-          xargs -n 10 -P 4 -I{} docker run --rm \
-            -v "$PWD":/workspace -w /workspace \
-            plantuml/plantuml:1.2024.6 \
-            sh -c '
-              for PUML_FILE in {}; do
-                REL_PATH=${PUML_FILE#docs/uml/}
-                OUT_DIR="docs/diagrams/$(dirname "$REL_PATH")"
+          find docs/uml -name '*.puml' | sort -f | while read -r PUML_FILE; do
+            REL_PATH=${PUML_FILE#docs/uml/}
+            OUT_DIR="docs/diagrams/$(dirname "$REL_PATH")"
           
-                mkdir -p "$OUT_DIR"
+            mkdir -p "$OUT_DIR"
           
-                echo "Generating $PUML_FILE -> $OUT_DIR"
-                plantuml -tsvg -o "$OUT_DIR" "$PUML_FILE"
-              done
-            '
+            echo "Generating $PUML_FILE -> $OUT_DIR"
+            plantuml -tsvg -o "$OUT_DIR" "$PUML_FILE"
+          done
 
       # Remove orphan SVG diagrams
       - name: Remove orphan SVG diagrams
