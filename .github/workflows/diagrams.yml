@@ -136,14 +136,14 @@ jobs:
           ${RUN_URL}
 
           2. In the **Artifacts** section, download:
-          **diagram-update.patch**
+          **diagram-update-patch**
 
           3. Apply it locally:
 
           \`\`\`bash
           git apply diagram-update.patch
           git add docs/diagrams
-          git commit -m "Update diagrams"
+          git commit -m "fix: generated diagrams out of sync"
           git push
           \`\`\`
           EOF
@@ -173,14 +173,14 @@ jobs:
             ${runUrl}
 
             2. In the **Artifacts** section, download:
-            **diagram-update.patch**
+            **diagram-update-patch**
 
             3. Apply it locally:
 
             \`\`\`bash
             git apply diagram-update.patch
             git add docs/diagrams
-            git commit -m "Update diagrams"
+            git commit -m "fix: generated diagrams out of sync"
             git push
             \`\`\`
 
