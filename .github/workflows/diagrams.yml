@@ -32,9 +32,9 @@ jobs:
       - name: Generate all SVG diagrams
         run: |
           mkdir -p docs/diagrams
-          
-          find docs/uml -name '*.puml' | sort -f | while read -r PUML_FILE; do
-            REL_PATH=${PUML_FILE#docs/uml/}
+
+          find docs/uml -name '*.puml' -print0 | while IFS= read -r -d '' PUML_FILE; do
+            REL_PATH="${PUML_FILE#docs/uml/}"
             REL_DIR=$(dirname "$REL_PATH")
             OUT_DIR="docs/diagrams/$REL_DIR"
 
