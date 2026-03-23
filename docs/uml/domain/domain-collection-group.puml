@@ -12,7 +12,7 @@ class CollectionGroupMembership <<Entity>> {
     +SortIndex: int
 }
 
-note right of CollectionGroupMembership
+note bottom of CollectionGroupMembership
 Invariant:
 - MediaWork can appear only once per
   CollectionGroup
