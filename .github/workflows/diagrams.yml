@@ -31,20 +31,26 @@ jobs:
       # TODO: Optimize SVG generation for large numbers of .puml files (only changes)
       - name: Generate all SVG diagrams
         run: |
-          mkdir -p docs/diagrams
+          set -e
+          SRC_ROOT="docs/uml"
+          DST_ROOT="docs/diagrams"
 
-          find docs/uml -name '*.puml' -exec bash -c '
-            for PUML_FILE do
-              REL_PATH="${PUML_FILE#docs/uml/}"
-              REL_DIR=$(dirname "$REL_PATH")
-              OUT_DIR="docs/diagrams/$REL_DIR"
-              
-              mkdir -p "$OUT_DIR"
-              
-              echo "Generating $PUML_FILE -> $OUT_DIR"
-              plantuml -tsvg "$PUML_FILE" -o "$OUT_DIR"
-            done
-          ' bash {} +
+          mkdir -p "$DST_ROOT"
+
+          find "$SRC_ROOT" -name '*.puml' | while read -r PUML_FILE; do
+            REL_PATH="${PUML_FILE#$SRC_ROOT/}"
+            REL_DIR="$(dirname "$REL_PATH")"
+            BASENAME="$(basename "$PUML_FILE" .puml)"
+
+            OUT_DIR="$DST_ROOT/$REL_DIR"
+            OUT_FILE="$OUT_DIR/$BASENAME.svg"
+
+            mkdir -p "$OUT_DIR"
+
+            echo "Generating $PUML_FILE -> $OUT_FILE"
+            plantuml -tsvg "$PUML_FILE"
+            mv "${PUML_FILE%.puml}.svg" "$OUT_FILE"
+          done
           
       - name: Debug - List generated SVG files
         run: |
