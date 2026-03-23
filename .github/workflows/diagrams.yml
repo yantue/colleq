@@ -33,17 +33,19 @@ jobs:
         run: |
           mkdir -p docs/diagrams
 
-          for PUML_FILE in $(find docs/uml -name '*.puml' | sort); do
-            REL_PATH="${PUML_FILE#docs/uml/}"
-            REL_DIR=$(dirname "$REL_PATH")
-            OUT_DIR="docs/diagrams/$REL_DIR"
-            
-            mkdir -p "$OUT_DIR"
-            
-            echo "Generating $PUML_FILE -> $OUT_DIR"
-            plantuml -tsvg "$PUML_FILE" -o "$OUT_DIR"
-          done
-
+          find docs/uml -name '*.puml' -exec bash -c '
+            for PUML_FILE do
+              REL_PATH="${PUML_FILE#docs/uml/}"
+              REL_DIR=$(dirname "$REL_PATH")
+              OUT_DIR="docs/diagrams/$REL_DIR"
+              
+              mkdir -p "$OUT_DIR"
+              
+              echo "Generating $PUML_FILE -> $OUT_DIR"
+              plantuml -tsvg "$PUML_FILE" -o "$OUT_DIR"
+            done
+          ' bash {} +
+          
       - name: Debug - List generated SVG files
         run: |
           echo "SVG files found:"
