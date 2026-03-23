@@ -7,7 +7,7 @@ abstract class MediaWork <<AggregateRoot>> {
     +Title: string
     +OriginalReleaseDate: LocalDate
     -_contributions: List<Contribution>
-    #_creatorRoles: List<string>
+    #_creatorRoles: List<ContributorRole>
     --
     +AddContribution(id, role): void
     +RemoveContribution(id): void
@@ -33,6 +33,12 @@ abstract class Edition <<Entity>> {
     +ReleaseDate: LocalDate
     +Extras: List<Extra>
 }
+
+note bottom of Edition
+Invariant:
+- Edition must always belong to exactly one
+MediaWork
+end note
 
 MediaWork "1" *-- "0..*" Edition
 

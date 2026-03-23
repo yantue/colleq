@@ -7,6 +7,7 @@ class CollectionGroup <<AggregateRoot>> {
 }
 
 class CollectionGroupMembership <<Entity>> {
+    +Id: UUID
     +MediaWorkId: UUID
     +SortIndex: int
 }
@@ -15,10 +16,8 @@ note right of CollectionGroupMembership
 Invariant:
 - MediaWork can appear only once per
   CollectionGroup
-- SortIndex defines the relative
-  position of the MediaWork within the
-  CollectionGroup, gaps allowed but no
-  duplicates
+- SortIndex must be unique within a
+  CollectionGroup
 end note
 
 CollectionGroup "1" *-- "0..*" CollectionGroupMembership
