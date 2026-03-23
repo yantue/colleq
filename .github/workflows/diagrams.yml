@@ -32,19 +32,16 @@ jobs:
       - name: Generate all SVG diagrams
         run: |
           mkdir -p docs/diagrams
-          
+          ROOT_DIR=$(pwd)
           find docs/uml -name '*.puml' | sort -f | while read -r PUML_FILE; do
             REL_PATH=${PUML_FILE#docs/uml/}
             REL_DIR=$(dirname "$REL_PATH")
-            OUT_DIR="docs/diagrams/$REL_DIR"
+            OUT_DIR="$ROOT_DIR/diagrams/$REL_DIR"
 
             mkdir -p "$OUT_DIR"
 
             echo "Generating $PUML_FILE -> $OUT_DIR"
-            (
-              cd "$(dirname "$PUML_FILE")" && \
-              plantuml -tsvg "$(basename "$PUML_FILE")" -o "../../$OUT_DIR"
-            )
+            plantuml -tsvg "$PUML_FILE" -o "$OUT_DIR"
           done
 
       - name: Debug - List generated SVG files
