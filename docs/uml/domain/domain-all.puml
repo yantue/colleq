@@ -8,8 +8,8 @@ skinparam classAttributeIconSize 0
 
 Contribution ..> Contributor
 
-MediaWork <.. CollectionGroupMembership
-
 MediaCopy ..> Edition
+
+MediaWork <.. CollectionGroupMembership
 
 @enduml
