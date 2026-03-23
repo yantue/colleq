@@ -41,16 +41,13 @@ jobs:
             mkdir -p "$OUT_DIR"
 
             echo "Generating $PUML_FILE -> $OUT_DIR"
-            (
-              cd "$(dirname "$PUML_FILE")" && \
-              plantuml -tsvg "$(basename "$PUML_FILE")" -o "../../$OUT_DIR"
-            )
+            plantuml -tsvg "$PUML_FILE" -o "$OUT_DIR"
           done
 
       - name: Debug - List generated SVG files
         run: |
           echo "SVG files found:"
-          find docs/diagrams -name '*.svg' -print
+          find . -name '*.svg' -print
 
       # Remove orphan SVG diagrams
       - name: Remove orphan SVG diagrams
