@@ -73,9 +73,15 @@ jobs:
       - name: Detect diagram changes
         id: diff
         run: |
-          if git diff --quiet docs/diagrams; then
+          git status
+          git add docs/diagrams
+          git status
+
+          if git diff --cached --quiet; then
+            echo "No changes"
             echo "changed=false" >> $GITHUB_OUTPUT
           else
+            echo "Changes detected"
             echo "changed=true" >> $GITHUB_OUTPUT
           fi
 
