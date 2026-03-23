@@ -32,11 +32,11 @@ jobs:
       - name: Generate all SVG diagrams
         run: |
           mkdir -p docs/diagrams
-          ROOT_DIR=$(pwd)
+          
           find docs/uml -name '*.puml' | sort -f | while read -r PUML_FILE; do
             REL_PATH=${PUML_FILE#docs/uml/}
             REL_DIR=$(dirname "$REL_PATH")
-            OUT_DIR="$ROOT_DIR/diagrams/$REL_DIR"
+            OUT_DIR="docs/diagrams/$REL_DIR"
 
             mkdir -p "$OUT_DIR"
 
@@ -47,7 +47,7 @@ jobs:
       - name: Debug - List generated SVG files
         run: |
           echo "SVG files found:"
-          find docs/diagrams -name '*.svg' -print
+          find . -name '*.svg' -print
 
       # Remove orphan SVG diagrams
       - name: Remove orphan SVG diagrams
