@@ -1,0 +1,25 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+class CollectionGroup <<AggregateRoot>> {
+    +Id: UUID
+    +Title: string
+}
+
+class CollectionGroupMembership <<Entity>> {
+    +Id: UUID
+    +MediaWorkId: UUID
+    +SortIndex: int
+}
+
+note bottom of CollectionGroupMembership
+Invariant:
+- MediaWork can appear only once per
+  CollectionGroup
+- SortIndex must be unique within a
+  CollectionGroup
+end note
+
+CollectionGroup "1" *-- "0..*" CollectionGroupMembership
+
+@enduml

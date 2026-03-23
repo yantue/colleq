@@ -1,0 +1,21 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+class MediaCopy <<AggregateRoot>> {
+    +Id: UUID
+    +EditionId: UUID
+    +Location: Location
+    +Notes: List<Note>
+    +DateAdded?: LocalDate
+}
+
+class Location <<ValueObject>> {
+    +Name: string
+}
+
+class Note <<ValueObject>> {
+    +Text: string
+    +CreatedAt: DateTime
+}
+
+@enduml

@@ -1,0 +1,21 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+class MediaWork
+class Edition
+class MediaCopy
+class CollectionGroup
+class CollectionGroupMembership
+class Contribution
+class Contributor
+
+CollectionGroup --> CollectionGroupMembership : contains
+CollectionGroupMembership --> MediaWork : references
+
+MediaWork --> Edition : has
+MediaCopy --> Edition : instance of
+
+MediaWork --> Contribution : has
+Contribution --> Contributor : by
+
+@enduml
