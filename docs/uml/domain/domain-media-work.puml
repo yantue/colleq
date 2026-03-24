@@ -119,7 +119,7 @@ class AudioTrack <<ValueObject>> {
 }
 
 class Extra <<ValueObject>> {
-    +Description: string
+    +Title: string
     +Type: ExtraType
 }
 

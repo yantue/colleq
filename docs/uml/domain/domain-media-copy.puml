@@ -7,6 +7,7 @@ class MediaCopy <<AggregateRoot>> {
     +Location: Location
     +Notes: List<Note>
     +DateAdded?: LocalDate
+    +CreatedAt: DateTime
 }
 
 class Location <<ValueObject>> {
