@@ -28,20 +28,6 @@ Invariant:
   layer)
 end note
 
-abstract class Edition <<Entity>> {
-    +Id: UUID
-    +ReleaseDate: LocalDate
-    +Extras: List<Extra>
-}
-
-note bottom of Edition
-Invariant:
-- Edition must always belong to exactly one
-MediaWork
-end note
-
-MediaWork "1" *-- "0..*" Edition
-
 class Contribution <<Entity>> {
     +Id: UUID
     +ContributorId: UUID
@@ -59,39 +45,12 @@ class Movie
 
 Movie --|> MediaWork
 
-class MovieEdition {
-    +RuntimeMinutes: int
-    +Medium: VideoMedium
-    +Case: VideoCase
-    +DiscCount: int
-    +AudioTracks: List<AudioTrack>
-    +SubtitleTracks: List<string>
-}
-
-Edition <|-- MovieEdition
-
 ' ===== TV =====
 class TV {
     +EndDate: LocalDate?
 }
 
 TV --|> MediaWork
-
-class TVEdition {
-    +CoveredSeasonNumbers: List<int>
-    +Medium: VideoMedium
-    +Case: VideoCase
-    +DiscCount: int
-    +AudioTracks: List<AudioTrack>
-    +SubtitleTracks: List<string>
-}
-
-Edition <|-- TVEdition
-
-note top of TVEdition
-Invariant:
-- Must have at least one CoveredSeasonNumber
-end note
 
 class Season <<Entity>> {
     +Id: UUID
@@ -116,32 +75,6 @@ TV "1" *-- "1..*" Season
 class AudioTrack <<ValueObject>> {
     +Language: string
     +Format: string
-}
-
-class Extra <<ValueObject>> {
-    +Description: string
-    +Type: ExtraType
-}
-
-class ExtraType <<ValueObject>> {
-    +Name: string
-}
-
-enum VideoMedium {
-    DVD
-    BluRay
-    UHD
-    Digital
-}
-
-enum VideoCase {
-    Standard
-    Steelbook
-    Digipack
-    Slipcover
-    Boxset
-    Mediabook
-    Other
 }
 
 @enduml

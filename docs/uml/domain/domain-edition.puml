@@ -1,0 +1,75 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+class Edition <<AggregateRoot>> {
+    +Id: UUID
+    +Title: string
+    +ReleaseDate: LocalDate
+    +MediaWorks: List<UUID>
+    +Packaging?: MediaPackaging
+}
+
+note top of Edition
+Invariant:
+- For each contentId in MediaContainer.Content,
+  there exists an EditionContent with that contentId
+end note
+
+class EditionContent {
+    ' TODO: Add Content entities/VO's to MediaWork for Content
+    ContentId: UUID
+    Role: ContentRole
+}
+
+Edition "1" *-- "1..*" EditionContent
+
+enum ContentRole {
+    Main
+    Extra
+}
+
+class MediaContainer <<ValueObject>> {
+    +Title?: string
+    +Content: List<UUID>
+}
+
+Edition "1" *-- "1..*" MediaContainer
+
+class DiscContainer {
+    +Type: DiscType
+    +RegionCodes?: List<RegionCode>
+}
+
+MediaContainer <|-- DiscContainer
+
+enum MediaPackaging {
+    Boxset
+    Digipack
+    Mediabook
+    Slipcover
+    Amaray
+    Steelbook
+}
+
+enum DiscType {
+    BluRay
+    DVD
+    UHD
+}
+
+enum RegionCode {
+    A
+    B
+    C
+    0ALL
+    1
+    2
+    3
+    4
+    5
+    6
+    7
+    8
+}
+
+@enduml

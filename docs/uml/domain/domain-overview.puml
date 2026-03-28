@@ -12,7 +12,7 @@ class Contributor
 CollectionGroup --> CollectionGroupMembership : contains
 CollectionGroupMembership --> MediaWork : references
 
-MediaWork --> Edition : has
+MediaWork --> Edition : has/part of
 MediaCopy --> Edition : instance of
 
 MediaWork --> Contribution : has

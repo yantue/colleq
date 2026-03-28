@@ -12,4 +12,6 @@ MediaWork <.. CollectionGroupMembership
 
 MediaCopy ..> Edition
 
+MediaWork "1" *-- "0..*" Edition
+
 @enduml
