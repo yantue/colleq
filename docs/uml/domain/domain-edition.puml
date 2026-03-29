@@ -16,8 +16,8 @@ Invariant:
 end note
 
 class EditionContent {
-    ContentId: UUID
-    Role: ContentRole
+    +ContentId: UUID
+    +Role: ContentRole
 }
 
 Edition "1" *-- "1..*" EditionContent

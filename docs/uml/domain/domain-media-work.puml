@@ -36,7 +36,8 @@ abstract class Content <<Entity>> {
 MediaWork "1..*" *-- "0..*" Content
 
 class BonusContent {
-    RuntimeMinutes?: int
+    +SubtitleTracks: List<string>
+    +RuntimeMinutes?: int
 }
 
 Content <|-- BonusContent
@@ -61,6 +62,7 @@ Movie --|> MediaWork
 class MovieFeature {
     +RuntimeMinutes: int
     +CutType: MovieCutType
+    +SubtitleTracks: List<string>
 }
 
 enum MovieCutType {
@@ -75,6 +77,7 @@ Content <|-- MovieFeature
 
 ' ===== TV =====
 class TV {
+    +SubtitleTracks: List<string>
     +EndDate: LocalDate?
 }
 
