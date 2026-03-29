@@ -41,12 +41,19 @@ class DiscCarrier {
 
 MediaCarrier <|-- DiscCarrier
 
+class DigitalCarrier {
+    +Type: DigitalType
+    +Platform?: string
+}
+
+MediaCarrier <|-- DigitalCarrier
+
 enum MediaPackaging {
+    Amaray
     Boxset
     Digipack
     Mediabook
     Slipcover
-    Amaray
     Steelbook
 }
 
@@ -54,6 +61,11 @@ enum DiscType {
     BluRay
     DVD
     UHD
+}
+
+enum DigitalType {
+    Download
+    Streaming
 }
 
 enum RegionCode {
