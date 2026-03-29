@@ -15,7 +15,7 @@ Invariant:
   there exists an EditionContent with that contentId
 end note
 
-class EditionContent {
+class EditionContent <<ValueObject>> {
     +ContentId: UUID
     +Role: ContentRole
 }
@@ -27,7 +27,8 @@ enum ContentRole {
     Bonus
 }
 
-class MediaCarrier <<ValueObject>> {
+class MediaCarrier <<Entity>> {
+    +Id: UUID
     +Title?: string
     +Content: List<UUID>
 }
