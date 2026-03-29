@@ -28,6 +28,19 @@ Invariant:
   layer)
 end note
 
+abstract class Content <<Entity>> {
+    +Id: UUID
+    +Title?: string
+}
+
+MediaWork "1" *-- "1..*" Content
+
+class BonusContent {
+    RuntimeMinutes?: int
+}
+
+Content <|-- BonusContent
+
 class Contribution <<Entity>> {
     +Id: UUID
     +ContributorId: UUID
@@ -41,9 +54,24 @@ class ContributorRole <<ValueObject>> {
 MediaWork "1" *-- "1..*" Contribution
 
 ' ===== MOVIE =====
-class Movie
+class Movie {}
 
 Movie --|> MediaWork
+
+class MovieFeature {
+    +RuntimeMinutes: int
+    +CutType: MovieCutType
+}
+
+enum MovieCutType {
+    Theatrical
+    Extended
+    DirectorCut
+    FinalCut
+    Other
+}
+
+Content <|-- MovieFeature
 
 ' ===== TV =====
 class TV {
@@ -55,20 +83,19 @@ TV --|> MediaWork
 class Season <<Entity>> {
     +Id: UUID
     +SeasonNumber: int
-    +Episode: List<Episode>
-    +OriginalReleaseDate: LocalDate
+    +EpisodeIds: List<UUID>
     +Title: string?
 }
 
-class Episode <<Entity>> {
-    +Id: UUID
+class Episode {
     +EpisodeNumber: int
     +AirDate: LocalDate
     +RuntimeMinutes: int
-    +Title: string?
 }
 
-Season "1" *-- "1..*" Episode
+Content <|-- Episode
+Season ..> Episode
+
 TV "1" *-- "1..*" Season
 
 ' ===== SHARED =====
@@ -76,5 +103,9 @@ class AudioTrack <<ValueObject>> {
     +Language: string
     +Format: string
 }
+
+MovieFeature "1" *-- "0..*" AudioTrack
+Episode "1" *-- "0..*" AudioTrack
+BonusContent "1" *-- "0..*" AudioTrack
 
 @enduml

@@ -16,7 +16,6 @@ Invariant:
 end note
 
 class EditionContent {
-    ' TODO: Add Content entities/VO's to MediaWork for Content
     ContentId: UUID
     Role: ContentRole
 }
@@ -25,7 +24,7 @@ Edition "1" *-- "1..*" EditionContent
 
 enum ContentRole {
     Main
-    Extra
+    Bonus
 }
 
 class MediaContainer <<ValueObject>> {
