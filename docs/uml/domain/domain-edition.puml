@@ -11,7 +11,7 @@ class Edition <<AggregateRoot>> {
 
 note top of Edition
 Invariant:
-- For each contentId in MediaContainer.Content,
+- For each contentId in MediaCarrier.Content,
   there exists an EditionContent with that contentId
 end note
 
@@ -27,19 +27,19 @@ enum ContentRole {
     Bonus
 }
 
-class MediaContainer <<ValueObject>> {
+class MediaCarrier <<ValueObject>> {
     +Title?: string
     +Content: List<UUID>
 }
 
-Edition "1" *-- "1..*" MediaContainer
+Edition "1" *-- "1..*" MediaCarrier
 
-class DiscContainer {
+class DiscCarrier {
     +Type: DiscType
     +RegionCodes?: List<RegionCode>
 }
 
-MediaContainer <|-- DiscContainer
+MediaCarrier <|-- DiscCarrier
 
 enum MediaPackaging {
     Boxset

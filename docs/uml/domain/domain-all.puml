@@ -13,6 +13,6 @@ MediaWork <.. CollectionGroupMembership
 
 MediaCopy ..> Edition
 
-MediaWork "1" *-- "0..*" Edition
+MediaWork "0..*" *-- "0..*" Edition
 
 @enduml

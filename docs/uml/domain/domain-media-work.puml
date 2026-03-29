@@ -33,7 +33,7 @@ abstract class Content <<Entity>> {
     +Title?: string
 }
 
-MediaWork "1" *-- "1..*" Content
+MediaWork "1..*" *-- "0..*" Content
 
 class BonusContent {
     RuntimeMinutes?: int
