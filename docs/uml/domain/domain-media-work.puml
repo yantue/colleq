@@ -2,46 +2,48 @@
 skinparam classAttributeIconSize 0
 
 ' ===== CORE =====
-abstract class MediaWork <<AggregateRoot>> {
+class MediaWork <<AggregateRoot>> {
     +Id: UUID
     +Title: string
+    +Description?: string
     +OriginalReleaseDate: LocalDate
+    -_structure: MediaStructure
     -_contributions: List<Contribution>
-    #_creatorRoles: List<ContributorRole>
+    -_content: List<Content>
     --
     +AddContribution(id, role): void
     +RemoveContribution(id): void
-    +AddEdition(id): void
-    +RemoveEdition(id): void
-    +IsCreatorRole(role): bool
+    +AddContent(content): void
+    +RemoveContent(id): void
 }
 
 note top of MediaWork
 Invariant:
-- Must have at least one Contribution
-  where concrete MediaWork considers Role
-  a creator (member of _creatorRoles)
+- Must have exactly one MediaStructure
+- Structure defines the MediaWork type
+- Must have at least one creator contribution
 - Cannot remove last creator
-- Cannot remove Edition if MediaCopy
-  exists referencing it (cross-aggregate
-  constraint, enforce in application
-  layer)
+- Cannot remove Edition if MediaCopy exists
+  referencing it (cross-aggregate)
+- All Features / Episodes must reference a
+  Content that is a PlayableContent inside
+  MediaWork._contents
 end note
 
-abstract class Content <<Entity>> {
-    +Id: UUID
-    +Title?: string
+abstract class MediaStructure <<Entity>> {
+    --
+    +Type(): MediaWorkType
+    +IsCreatorRole(role): bool
 }
 
-MediaWork "1..*" *-- "0..*" Content
+MediaWork "1" *-- "1" MediaStructure
 
-class BonusContent {
-    +SubtitleTracks: List<string>
-    +RuntimeMinutes?: int
+enum MediaWorkType {
+    Movie
+    TV
 }
 
-Content <|-- BonusContent
-
+' ===== CONTRIBUTIONS =====
 class Contribution <<Entity>> {
     +Id: UUID
     +ContributorId: UUID
@@ -54,61 +56,91 @@ class ContributorRole <<ValueObject>> {
 
 MediaWork "1" *-- "1..*" Contribution
 
-' ===== MOVIE =====
-class Movie {}
-
-Movie --|> MediaWork
-
-class MovieFeature {
-    +RuntimeMinutes: int
-    +CutType: MovieCutType
-    +SubtitleTracks: List<string>
-}
-
-enum MovieCutType {
-    Theatrical
-    Extended
-    DirectorCut
-    FinalCut
-    Other
-}
-
-Content <|-- MovieFeature
-
-' ===== TV =====
-class TV {
-    +SubtitleTracks: List<string>
-    +EndDate: LocalDate?
-}
-
-TV --|> MediaWork
-
-class Season <<Entity>> {
+' ===== CONTENT =====
+class Content <<Entity>> {
     +Id: UUID
-    +SeasonNumber: int
-    +EpisodeIds: List<UUID>
-    +Title: string?
+    +Title?: string
+    +Description?: string
 }
 
-class Episode {
-    +EpisodeNumber: int
-    +AirDate: LocalDate
+MediaWork "1" *-- "0..*" Content
+
+class PlayableContent {
     +RuntimeMinutes: int
+    +CutType?: CutType
+    +SubtitleTracks: List<string>
 }
 
-Content <|-- Episode
-Season ..> Episode
+enum CutType {
+    DirectorCut
+    Extended
+    FinalCut
+    HomeRelease
+    International
+    Original
+    Other
+    Theatrical
+    Uncut
+}
 
-TV "1" *-- "1..*" Season
+Content <|-- PlayableContent
 
-' ===== SHARED =====
 class AudioTrack <<ValueObject>> {
     +Language: string
     +Format: string
 }
 
-MovieFeature "1" *-- "0..*" AudioTrack
-Episode "1" *-- "0..*" AudioTrack
-BonusContent "1" *-- "0..*" AudioTrack
+PlayableContent "1" *-- "0..*" AudioTrack
+
+' ===== MOVIE =====
+class MovieStructure {
+    -_features: List<UUID>
+    --
+    +AddFeature(id): void
+    +RemoveFeature(id): void
+}
+
+MediaStructure <|-- MovieStructure
+MovieStructure ..> PlayableContent
+
+' ===== TV =====
+class TVStructure {
+    +Status: TVStatus
+    +EndedOn?: LocalDate
+    -_episodes: List<UUID>
+    --
+    +AddEpisode(id): void
+    +RemoveEpisode(id): void
+}
+
+MediaStructure <|-- TVStructure
+TVStructure ..> PlayableContent
+
+enum TVStatus {
+    Ongoing
+    Ended
+    Cancelled
+    Unknown
+}
+
+class Season <<Entity>> {
+    +Id: UUID
+    +SeasonNumber: int
+    +Title: string?
+    +Description: string?
+}
+
+TVStructure "1" *-- "1..*" Season
+
+class Episode {
+    +episodeId: UUID
+    +Title?: string
+    +Description?: string
+    +EpisodeNumber?: int
+    +AirDate: LocalDate
+}
+
+Season "1" *-- "1..*" Episode
+Episode ..> PlayableContent
 
 @enduml

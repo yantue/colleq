@@ -13,6 +13,7 @@ note top of Edition
 Invariant:
 - For each contentId in MediaCarrier.Content,
   there exists an EditionContent with that contentId
+  that references a content in MediaWork._contents
 end note
 
 class EditionContent <<ValueObject>> {
@@ -23,8 +24,8 @@ class EditionContent <<ValueObject>> {
 Edition "1" *-- "1..*" EditionContent
 
 enum ContentRole {
-    Main
-    Bonus
+    Primary
+    Secondary
 }
 
 class MediaCarrier <<Entity>> {
