@@ -1,0 +1,92 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+class Edition <<AggregateRoot>> {
+    +Id: UUID
+    +Title: string
+    +ReleaseDate: LocalDate
+    +MediaWorks: List<UUID>
+    +Packaging?: MediaPackaging
+}
+
+note top of Edition
+Invariant:
+- For each contentId in MediaCarrier.Content,
+  there exists an EditionContent with that contentId
+  that references a content in MediaWork._contents
+end note
+
+class EditionContent <<ValueObject>> {
+    +ContentId: UUID
+    +ContentRole: ContentRole
+}
+
+Edition "1" *-- "1..*" EditionContent
+
+enum ContentRole {
+    Primary
+    Secondary
+}
+
+class MediaCarrier <<Entity>> {
+    +Id: UUID
+    +Title?: string
+    +Content: List<UUID>
+}
+
+Edition "1" *-- "1..*" MediaCarrier
+
+class DiscCarrier {
+    +DiscType: DiscType
+    +RegionCodes?: List<RegionCode>
+}
+
+MediaCarrier <|-- DiscCarrier
+
+class DigitalCarrier {
+    +DigitalType: DigitalType
+    +Platform?: string
+}
+
+MediaCarrier <|-- DigitalCarrier
+
+enum MediaPackaging {
+    Amaray
+    Boxset
+    Digipack
+    Mediabook
+    Slipcover
+    Steelbook
+}
+
+enum DiscType {
+    BluRay
+    DVD
+    UHD
+}
+
+enum DigitalType {
+    Download
+    Streaming
+}
+
+enum RegionCode {
+    A
+    B
+    C
+    0ALL
+    1
+    2
+    3
+    4
+    5
+    6
+    7
+    8
+}
+
+' ===== CROSS-AGGREGATE REFERENCE =====
+MediaWork <.. Edition
+EditionContent ..> Content
+
+@enduml

@@ -3,13 +3,8 @@ skinparam classAttributeIconSize 0
 
 !include domain-collection-group.puml
 !include domain-contributors.puml
+!include domain-edition.puml
 !include domain-media-copy.puml
 !include domain-media-work.puml
-
-Contribution ..> Contributor
-
-MediaWork <.. CollectionGroupMembership
-
-MediaCopy ..> Edition
 
 @enduml
