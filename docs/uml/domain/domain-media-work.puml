@@ -2,50 +2,50 @@
 skinparam classAttributeIconSize 0
 
 ' ===== CORE =====
-abstract class MediaWork <<AggregateRoot>> {
+class MediaWork <<AggregateRoot>> {
     +Id: UUID
     +Title: string
+    +Description?: string
     +OriginalReleaseDate: LocalDate
+    -_structure: MediaStructure
     -_contributions: List<Contribution>
-    #_creatorRoles: List<ContributorRole>
+    -_content: List<Content>
     --
     +AddContribution(id, role): void
     +RemoveContribution(id): void
-    +AddEdition(id): void
-    +RemoveEdition(id): void
-    +IsCreatorRole(role): bool
+    +AddContent(content): void
+    +RemoveContent(id): void
 }
 
 note top of MediaWork
 Invariant:
-- Must have at least one Contribution
-  where concrete MediaWork considers Role
-  a creator (member of _creatorRoles)
+- Must have exactly one MediaStructure
+- Structure defines the MediaWork type
+- Must have at least one creator contribution
 - Cannot remove last creator
-- Cannot remove Edition if MediaCopy
-  exists referencing it (cross-aggregate
-  constraint, enforce in application
-  layer)
+- All Features / Episodes must reference a
+  Content that is a PlayableContent inside
+  MediaWork._contents
 end note
 
-abstract class Edition <<Entity>> {
-    +Id: UUID
-    +ReleaseDate: LocalDate
-    +Extras: List<Extra>
+abstract class MediaStructure <<Entity>> {
+    --
+    +Type(): MediaWorkType
+    +IsCreatorRole(role): bool
 }
 
-note bottom of Edition
-Invariant:
-- Edition must always belong to exactly one
-MediaWork
-end note
+MediaWork "1" *-- "1" MediaStructure
 
-MediaWork "1" *-- "0..*" Edition
+enum MediaWorkType {
+    Movie
+    TV
+}
 
+' ===== CONTRIBUTIONS =====
 class Contribution <<Entity>> {
     +Id: UUID
     +ContributorId: UUID
-    +Role: ContributorRole
+    +ContributorRole: ContributorRole
 }
 
 class ContributorRole <<ValueObject>> {
@@ -54,94 +54,104 @@ class ContributorRole <<ValueObject>> {
 
 MediaWork "1" *-- "1..*" Contribution
 
-' ===== MOVIE =====
-class Movie
+' ===== CONTENT =====
+class Content <<Entity>> {
+    +Id: UUID
+    +Title?: string
+    +Description?: string
+}
 
-Movie --|> MediaWork
+MediaWork "1" *-- "0..*" Content
 
-class MovieEdition {
+class PlayableContent {
     +RuntimeMinutes: int
-    +Medium: VideoMedium
-    +Case: VideoCase
-    +DiscCount: int
-    +AudioTracks: List<AudioTrack>
+    +CutType?: CutType
     +SubtitleTracks: List<string>
 }
 
-Edition <|-- MovieEdition
-
-' ===== TV =====
-class TV {
-    +EndDate: LocalDate?
+enum CutType {
+    DirectorCut
+    Extended
+    FinalCut
+    HomeRelease
+    International
+    Original
+    Other
+    Theatrical
+    Uncut
 }
 
-TV --|> MediaWork
+Content <|-- PlayableContent
 
-class TVEdition {
-    +CoveredSeasonNumbers: List<int>
-    +Medium: VideoMedium
-    +Case: VideoCase
-    +DiscCount: int
-    +AudioTracks: List<AudioTrack>
-    +SubtitleTracks: List<string>
-}
-
-Edition <|-- TVEdition
-
-note top of TVEdition
-Invariant:
-- Must have at least one CoveredSeasonNumber
-end note
-
-class Season <<Entity>> {
-    +Id: UUID
-    +SeasonNumber: int
-    +Episode: List<Episode>
-    +OriginalReleaseDate: LocalDate
-    +Title: string?
-}
-
-class Episode <<Entity>> {
-    +Id: UUID
-    +EpisodeNumber: int
-    +AirDate: LocalDate
-    +RuntimeMinutes: int
-    +Title: string?
-}
-
-Season "1" *-- "1..*" Episode
-TV "1" *-- "1..*" Season
-
-' ===== SHARED =====
 class AudioTrack <<ValueObject>> {
     +Language: string
     +Format: string
 }
 
-class Extra <<ValueObject>> {
-    +Title: string
-    +Type: ExtraType
+PlayableContent "1" *-- "0..*" AudioTrack
+
+' ===== MOVIE =====
+class MovieStructure {
+    -_features: List<UUID>
+    --
+    +AddFeature(id): void
+    +RemoveFeature(id): void
 }
 
-class ExtraType <<ValueObject>> {
-    +Name: string
+MediaStructure <|-- MovieStructure
+MovieStructure ..> PlayableContent
+
+' ===== TV =====
+class TVStructure {
+    +Status: TVStatus
+    +EndedOn?: LocalDate
+    -_seasons: List<UUID>
+    --
+    +AddSeason(id): void
+    +RemoveSeason(id): void
+    +AddEpisodeToSeason(seasonId, episodeId, number?, airDate, role?)
+    +RemoveEpisodeFromSeason(seasonId, episodeId)
 }
 
-enum VideoMedium {
-    DVD
-    BluRay
-    UHD
-    Digital
+MediaStructure <|-- TVStructure
+
+enum TVStatus {
+    Ongoing
+    Ended
+    Cancelled
+    Unknown
 }
 
-enum VideoCase {
-    Standard
-    Steelbook
-    Digipack
-    Slipcover
-    Boxset
-    Mediabook
-    Other
+class Season <<Entity>> {
+    +Id: UUID
+    +SeasonNumber: int
+    +Title: string?
+    +Description: string?
+    _episodes: List<Episode>
+    --
+    +AddEpisode(id, number, airDate, role)
+    +RemoveEpisode(id)
 }
+
+TVStructure "1" *-- "1..*" Season
+
+class Episode <<Entity>> {
+    +contentId: UUID
+    +EpisodeNumber?: int
+    +AirDate: LocalDate
+    +EpisodeRole?: EpisodeRole;
+}
+
+Season "1" *-- "1..*" Episode
+Episode ..> PlayableContent
+
+enum EpisodeRole {
+    Regular
+    Bonus
+    Special
+}
+
+' ===== CROSS-AGGREGATE REFERENCE =====
+Contribution ..> Contributor
 
 @enduml

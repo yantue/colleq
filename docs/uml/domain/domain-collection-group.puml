@@ -22,4 +22,7 @@ end note
 
 CollectionGroup "1" *-- "0..*" CollectionGroupMembership
 
+' ===== CROSS-AGGREGATE REFERENCE =====
+MediaWork <.. CollectionGroupMembership
+
 @enduml
