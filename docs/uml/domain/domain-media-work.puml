@@ -45,7 +45,7 @@ enum MediaWorkType {
 class Contribution <<Entity>> {
     +Id: UUID
     +ContributorId: UUID
-    +Role: ContributorRole
+    +ContributorRole: ContributorRole
 }
 
 class ContributorRole <<ValueObject>> {
@@ -105,14 +105,15 @@ MovieStructure ..> PlayableContent
 class TVStructure {
     +Status: TVStatus
     +EndedOn?: LocalDate
-    -_episodes: List<UUID>
+    -_seasons: List<UUID>
     --
-    +AddEpisode(id): void
-    +RemoveEpisode(id): void
+    +AddSeason(id): void
+    +RemoveSeason(id): void
+    +AddEpisodeToSeason(seasonId, episodeId, number?, airDate, role?)
+    +RemoveEpisodeFromSeason(seasonId, episodeId)
 }
 
 MediaStructure <|-- TVStructure
-TVStructure ..> PlayableContent
 
 enum TVStatus {
     Ongoing
@@ -126,6 +127,10 @@ class Season <<Entity>> {
     +SeasonNumber: int
     +Title: string?
     +Description: string?
+    _episodes: List<Episode>
+    --
+    +AddEpisode(id, number, airDate, role)
+    +RemoveEpisode(id)
 }
 
 TVStructure "1" *-- "1..*" Season
@@ -134,7 +139,7 @@ class Episode <<Entity>> {
     +contentId: UUID
     +EpisodeNumber?: int
     +AirDate: LocalDate
-    +Role?: EpisodeRole;
+    +EpisodeRole?: EpisodeRole;
 }
 
 Season "1" *-- "1..*" Episode

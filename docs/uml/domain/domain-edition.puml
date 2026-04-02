@@ -18,7 +18,7 @@ end note
 
 class EditionContent <<ValueObject>> {
     +ContentId: UUID
-    +Role: ContentRole
+    +ContentRole: ContentRole
 }
 
 Edition "1" *-- "1..*" EditionContent
@@ -37,14 +37,14 @@ class MediaCarrier <<Entity>> {
 Edition "1" *-- "1..*" MediaCarrier
 
 class DiscCarrier {
-    +Type: DiscType
+    +DiscType: DiscType
     +RegionCodes?: List<RegionCode>
 }
 
 MediaCarrier <|-- DiscCarrier
 
 class DigitalCarrier {
-    +Type: DigitalType
+    +DigitalType: DigitalType
     +Platform?: string
 }
 
