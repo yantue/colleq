@@ -7,12 +7,4 @@ skinparam classAttributeIconSize 0
 !include domain-media-copy.puml
 !include domain-media-work.puml
 
-Contribution ..> Contributor
-
-MediaWork <.. CollectionGroupMembership
-
-MediaCopy ..> Edition
-
-MediaWork "0..*" *-- "0..*" Edition
-
 @enduml

@@ -23,8 +23,6 @@ Invariant:
 - Structure defines the MediaWork type
 - Must have at least one creator contribution
 - Cannot remove last creator
-- Cannot remove Edition if MediaCopy exists
-  referencing it (cross-aggregate)
 - All Features / Episodes must reference a
   Content that is a PlayableContent inside
   MediaWork._contents
@@ -132,15 +130,23 @@ class Season <<Entity>> {
 
 TVStructure "1" *-- "1..*" Season
 
-class Episode {
-    +episodeId: UUID
-    +Title?: string
-    +Description?: string
+class Episode <<Entity>> {
+    +contentId: UUID
     +EpisodeNumber?: int
     +AirDate: LocalDate
+    +Role?: EpisodeRole;
 }
 
 Season "1" *-- "1..*" Episode
 Episode ..> PlayableContent
+
+enum EpisodeRole {
+    Regular
+    Bonus
+    Special
+}
+
+' ===== CROSS-AGGREGATE REFERENCE =====
+Contribution ..> Contributor
 
 @enduml

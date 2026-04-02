@@ -1,21 +1,73 @@
 @startuml
 skinparam classAttributeIconSize 0
+skinparam linetype ortho
 
-class MediaWork
-class Edition
-class MediaCopy
-class CollectionGroup
-class CollectionGroupMembership
+' ===== AGGREGATES =====
+class MediaWork <<AggregateRoot>> {
+    +Id
+    +Title
+}
+
+class Edition <<AggregateRoot>> {
+    +Id
+    +Title
+    +ReleaseDate
+}
+
+class MediaCopy <<AggregateRoot>> {
+    +Id
+    +Location
+}
+
+class CollectionGroup <<AggregateRoot>> {
+    +Id
+    +Title
+}
+
+class Contributor <<AggregateRoot>> {
+    +Id
+    +Name
+}
+
+' ===== ENTITIES =====
+class Content
+class PlayableContent
 class Contribution
-class Contributor
+class CollectionGroupMembership
+class EditionContent
 
+' ===== RELATIONSHIPS =====
 CollectionGroup --> CollectionGroupMembership : contains
 CollectionGroupMembership --> MediaWork : references
 
-MediaWork --> Edition : has/part of
-MediaCopy --> Edition : instance of
+Edition ..> MediaWork : references
+MediaCopy ..> Edition : instance of
 
+MediaWork --> Content : owns
+Content <|-- PlayableContent
 MediaWork --> Contribution : has
 Contribution --> Contributor : by
+
+Edition --> EditionContent : contains content mapping
+EditionContent ..> Content : references
+
+' ===== NOTES =====
+note right of MediaWork
+- MediaWork uses MediaStructure
+  polymorphism internally
+- Owns all Content related to
+  this MediaWork
+end note
+
+note right of Edition
+- Edition links to MediaWorks
+  and their content via
+  EditionContent
+end note
+
+note right of MediaCopy
+- Owned instance of an Edition
+- Location and Notes tracked
+end note
 
 @enduml
