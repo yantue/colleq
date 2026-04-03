@@ -7,7 +7,7 @@ class MediaWork <<AggregateRoot>> {
     +Title: string
     +Description?: string
     +OriginalReleaseDate: LocalDate
-    -_structure: MediaStructure
+    #creatorRoles: List<CreatorRole>
     -_contributions: List<Contribution>
     -_content: List<Content>
     --
@@ -15,31 +15,17 @@ class MediaWork <<AggregateRoot>> {
     +RemoveContribution(id): void
     +AddContent(content): void
     +RemoveContent(id): void
+    +IsCreatorRole(role): bool
 }
 
 note top of MediaWork
 Invariant:
-- Must have exactly one MediaStructure
-- Structure defines the MediaWork type
 - Must have at least one creator contribution
 - Cannot remove last creator
 - All Features / Episodes must reference a
   Content that is a PlayableContent inside
   MediaWork._contents
 end note
-
-abstract class MediaStructure <<Entity>> {
-    --
-    +Type(): MediaWorkType
-    +IsCreatorRole(role): bool
-}
-
-MediaWork "1" *-- "1" MediaStructure
-
-enum MediaWorkType {
-    Movie
-    TV
-}
 
 ' ===== CONTRIBUTIONS =====
 class Contribution <<Entity>> {
@@ -91,18 +77,18 @@ class AudioTrack <<ValueObject>> {
 PlayableContent "1" *-- "0..*" AudioTrack
 
 ' ===== MOVIE =====
-class MovieStructure {
+class Movie {
     -_features: List<UUID>
     --
     +AddFeature(id): void
     +RemoveFeature(id): void
 }
 
-MediaStructure <|-- MovieStructure
-MovieStructure ..> PlayableContent
+MediaWork <|-- Movie
+Movie ..> PlayableContent
 
 ' ===== TV =====
-class TVStructure {
+class TV {
     +Status: TVStatus
     +EndedOn?: LocalDate
     -_seasons: List<UUID>
@@ -113,7 +99,7 @@ class TVStructure {
     +RemoveEpisodeFromSeason(seasonId, episodeId)
 }
 
-MediaStructure <|-- TVStructure
+MediaWork <|-- TV
 
 enum TVStatus {
     Ongoing
@@ -133,7 +119,7 @@ class Season <<Entity>> {
     +RemoveEpisode(id)
 }
 
-TVStructure "1" *-- "1..*" Season
+TV "1" *-- "1..*" Season
 
 class Episode <<Entity>> {
     +contentId: UUID
