@@ -4,38 +4,41 @@ skinparam classAttributeIconSize 0
 ' ===== MEDIA =====
 class media_work <<table>> {
     id: UUID <<PK>>
-    type: TEXT
     title: TEXT
+    description: TEXT
     original_release_date: DATE
-    end_date: DATE (nullable, TV only)
 }
 
-class edition <<table>> {
+class content <<table>> {
     id: UUID <<PK>>
     media_work_id: UUID <<FK>>
-    release_date: DATE
+    title: TEXT (nullable)
+    description: TEXT (nullable)
 }
 
-edition "0..*" --> "1" media_work
-
-class extra <<table>> {
-    edition_id: UUID <<PK>> <<FK>>
-    title: TEXT <<PK>>
-    type: TEXT <<PK>>
+class playable_content <<table>> {
+    content_id: UUID <<PK>> <<FK>>
+    runtime_minutes: INT
+    cut_type: TEXT (nullable)
 }
 
-extra "0..*" --> "1" edition
+content <-- playable_content
+
+class audio_track <<table>> {
+    playable_content_id: UUID <<PK>> <<FK>>
+    language: TEXT <<PK>>
+    format: TEXT <<PK>>
+}
+
+playable_content "1" <--> "0..*" audio_track
 
 class media_copy <<table>> {
     id: UUID <<PK>>
     edition_id: UUID <<FK>>
     location_name: TEXT
-    notes: TEXT
     date_added: DATE (nullable)
     created_at: TIMESTAMP
 }
-
-media_copy "0..*" --> "1" edition
 
 class note <<table>> {
     id: UUID <<PK>>
@@ -44,70 +47,66 @@ class note <<table>> {
     created_at: TIMESTAMP
 }
 
-note "0..*" --> "1" media_copy
+media_copy "1" <-- "0.." note
 
 ' ===== MOVIE =====
-class movie_edition <<table>> {
-    edition_id: UUID <<PK>> <<FK>>
-    runtime_minutes: INT
-    medium: TEXT (VideoMedium)
-    case: TEXT (VideoCase)
-    disc_count: INT
+class movie <<table>> {
+    media_work_id: UUID <<PK>> <<FK>>
 }
 
-movie_edition "0..1" --> "1" edition
+movie "1" --> "1" media_work
 
 ' ===== TV =====
-class tv_edition <<table>> {
-    edition_id: UUID <<PK>> <<FK>>
-    medium: TEXT (VideoMedium)
-    case: TEXT (VideoCase)
-    disc_count: INT
+class tv <<table>> {
+    media_work_id: UUID <<PK>> <<FK>>
+    status: TEXT
+    ended_on: TEXT
 }
 
-tv_edition "0..1" --> "1" edition
+tv "1" --> "1" media_work
 
 class season <<table>> {
     id: UUID <<PK>>
-    media_work_id: UUID <<FK>>
+    tv_id: UUID <<FK>>
     season_number: INT
-    original_release_date: DATE
     title: TEXT (nullable)
+    description: TEXT (nullable)
     --
-    UNIQUE(media_work_id, season_number)
+    UNIQUE(tv_id, season_number)
 }
 
-season "0..*" --> "1" media_work
+tv "1" <-- "0..*" season
 
 class episode <<table>> {
     id: UUID <<PK>>
     season_id: UUID <<FK>>
-    episode_number: INT
+    content_id: UUID <<FK>>
+    episode_number: INT (nullable))
     air_date: DATE
-    runtime_minutes: INT
-    title: TEXT (nullable)
+    role: TEXT (nullable)
+    --
     UNIQUE(season_id, episode_number)
 }
 
-episode "0..*" --> "1" season
+season "1" <-- "0..*" episode
 
-class tv_edition_season <<table>> {
-    tv_edition_id: UUID <<PK>> <<FK>>
-    season_id: UUID <<PK>> <<FK>>
+' ===== EDITION =====
+class edition <<table>> {
+    id: UUID <<PK>>
+    title: TEXT
+    release_date: DATE
+    packaging: TEXT (nullable))
 }
 
-tv_edition_season "1..*" --> "1" tv_edition
-tv_edition_season "0..*" --> "1" season
+edition "1" <-- "0..*" media_copy
 
-' ===== MOVIE/TV =====
-
-class audio_track <<table>> {
+class edition_content <<table>> {
     edition_id: UUID <<PK>> <<FK>>
-    language: TEXT <<PK>>
-    format: TEXT <<PK>>
+    content_id: UUID <<PK>> <<FK>>
+    content_role: TEXT
 }
 
-audio_track "0..*" --> "1" edition
+edition "1" <-- "0..*" edition_content
 
 ' ===== COLLECTION GROUP =====
 class collection_group <<table>> {
@@ -125,8 +124,8 @@ class collection_group_membership <<table>> {
     UNIQUE(collection_group_id, sort_index)
 }
 
-collection_group_membership "0..*" --> "1" collection_group
-collection_group_membership "0..*" --> "1" media_work
+media_work "1" <-- "0..*" collection_group_membership
+collection_group "1" <-- "0..*" collection_group_membership
 
 ' ===== CONTRIBUTORS =====
 class contributor <<table>> {
@@ -143,7 +142,7 @@ class contribution <<table>> {
     UNIQUE(media_work_id, contributor_id, role)
 }
 
-contribution "0..*" --> "1" contributor
-contribution "0..*" --> "1" media_work
+media_work "1" <-- "0..*" contribution
+contributor "1" <-- "0..*" contribution
 
 @enduml
