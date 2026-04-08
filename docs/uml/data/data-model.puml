@@ -30,7 +30,7 @@ class audio_track <<table>> {
     format: TEXT <<PK>>
 }
 
-playable_content "1" <--> "0..*" audio_track
+playable_content "1" <-- "0..*" audio_track
 
 class media_copy <<table>> {
     id: UUID <<PK>>
