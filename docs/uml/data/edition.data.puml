@@ -1,0 +1,26 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+class edition <<table>> {
+    id: UUID <<PK>>
+    title: TEXT
+    release_date: DATE
+    packaging: TEXT
+}
+
+class edition_content <<table>> {
+    edition_id: UUID <<FK>>
+    content_id: UUID <<FK>>
+    content_role: TEXT
+    --
+    PRIMARY(edition_id, content_id)
+}
+
+edition "1" <-- "0..*" edition_content
+
+' TODO: carrier and region codes, mediaworks
+
+' ===== CROSS-AGGREGATE REFERENCE =====
+content "1" <-- "0..*" edition_content
+
+@enduml

@@ -1,0 +1,98 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+' ===== CORE =====
+class media_work <<table>> {
+    id: UUID <<PK>>
+    title: TEXT
+    description: TEXT
+    original_release_date: DATE
+}
+
+' TODO: add creator roles
+
+' ===== CONTRIBUTIONS =====
+class contribution <<table>> {
+    id: UUID <<PK>>
+    media_work_id: UUID <<FK>>
+    contributor_id: UUID <<FK>>
+    contributor_role: TEXT
+    --
+    UNIQUE(media_work_id, contributor_id, role)
+}
+
+media_work "1" <-- "0..*" contribution
+
+' ===== CONTENT =====
+class content <<table>> {
+    id: UUID <<PK>>
+    media_work_id: UUID <<FK>>
+    title: TEXT (nullable)
+    description: TEXT (nullable)
+}
+
+' TODO: add content/mediawork join table
+
+class playable_content <<table>> {
+    content_id: UUID <<PK>> <<FK>>
+    runtime_minutes: INT
+    cut_type: TEXT (nullable)
+}
+
+content <-- playable_content
+
+class audio_track <<table>> {
+    playable_content_id: UUID <<PK>> <<FK>>
+    language: TEXT <<PK>>
+    format: TEXT <<PK>>
+}
+
+playable_content "1" <-- "0..*" audio_track
+
+' ===== MOVIE =====
+class movie <<table>> {
+    media_work_id: UUID <<PK>> <<FK>>
+}
+
+movie "1" --> "1" media_work
+
+' TODO: add features
+
+' ===== TV =====
+class tv <<table>> {
+    media_work_id: UUID <<PK>> <<FK>>
+    status: TEXT
+    ended_on: TEXT
+}
+
+tv "1" --> "1" media_work
+
+class season <<table>> {
+    id: UUID <<PK>>
+    tv_id: UUID <<FK>>
+    season_number: INT
+    title: TEXT (nullable)
+    description: TEXT (nullable)
+    --
+    UNIQUE(tv_id, season_number)
+}
+
+tv "1" <-- "0..*" season
+
+class episode <<table>> {
+    id: UUID <<PK>>
+    season_id: UUID <<FK>>
+    content_id: UUID <<FK>>
+    episode_number: INT (nullable))
+    air_date: DATE
+    role: TEXT (nullable)
+    --
+    UNIQUE(season_id, episode_number)
+}
+
+season "1" <-- "0..*" episode
+
+' ===== CROSS-AGGREGATE REFERENCE =====
+contributor "1" <-- "0..*" contribution
+
+@enduml

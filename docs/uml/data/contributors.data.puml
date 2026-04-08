@@ -1,0 +1,11 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+class contributor <<table>> {
+    id: UUID <<PK>>
+    name: TEXT
+}
+
+' ===== CROSS-AGGREGATE REFERENCE =====
+
+@enduml

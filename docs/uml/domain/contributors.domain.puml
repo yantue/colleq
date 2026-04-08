@@ -6,4 +6,6 @@ class Contributor <<AggregateRoot>> {
     +Name: string
 }
 
+' ===== CROSS-AGGREGATE REFERENCE =====
+
 @enduml

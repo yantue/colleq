@@ -1,0 +1,24 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+class media_copy <<table>> {
+    id: UUID <<PK>>
+    edition_id: UUID <<FK>>
+    location_name: TEXT
+    date_added: DATE
+    created_at: TIMESTAMP
+}
+
+class note <<table>> {
+    id: UUID <<PK>>
+    media_copy_id: UUID <<FK>>
+    text: TEXT
+    created_at: TIMESTAMP
+}
+
+media_copy "1" <-- "0.." note
+
+' ===== CROSS-AGGREGATE REFERENCE =====
+edition "1" <-- "0..*" media_copy
+
+@enduml
