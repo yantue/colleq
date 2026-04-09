@@ -52,7 +52,6 @@ MediaWork "1" *-- "0..*" Content
 class PlayableContent {
     +RuntimeMinutes: int
     +CutType?: CutType
-    +SubtitleTracks: List<string>
 }
 
 enum CutType {
@@ -75,6 +74,12 @@ class AudioTrack <<ValueObject>> {
 }
 
 PlayableContent "1" *-- "0..*" AudioTrack
+
+class SubtitleTrack <<ValueObject>> {
+    +Language: string
+}
+
+PlayableContent "1" *-- "0..*" SubtitleTrack
 
 ' ===== MOVIE =====
 class Movie {
@@ -125,7 +130,7 @@ class Episode <<Entity>> {
     +contentId: UUID
     +EpisodeNumber?: int
     +AirDate: LocalDate
-    +EpisodeRole?: EpisodeRole;
+    +EpisodeRole?: EpisodeRole
 }
 
 Season "1" *-- "1..*" Episode

@@ -9,8 +9,6 @@ class media_work <<table>> {
     original_release_date: DATE
 }
 
-' TODO: add creator roles
-
 ' ===== CONTRIBUTIONS =====
 class contribution <<table>> {
     id: UUID <<PK>>
@@ -27,27 +25,38 @@ media_work "1" <-- "0..*" contribution
 class content <<table>> {
     id: UUID <<PK>>
     media_work_id: UUID <<FK>>
-    title: TEXT (nullable)
-    description: TEXT (nullable)
+    title: TEXT
+    description: TEXT
 }
 
-' TODO: add content/mediawork join table
+media_work <-- content
 
 class playable_content <<table>> {
     content_id: UUID <<PK>> <<FK>>
     runtime_minutes: INT
-    cut_type: TEXT (nullable)
+    cut_type: TEXT
 }
 
 content <-- playable_content
 
 class audio_track <<table>> {
-    playable_content_id: UUID <<PK>> <<FK>>
-    language: TEXT <<PK>>
-    format: TEXT <<PK>>
+    playable_content_id: UUID <<FK>>
+    language: TEXT
+    format: TEXT
+    --
+    PRIMARY(playable_content_id, language, format)
 }
 
 playable_content "1" <-- "0..*" audio_track
+
+class subtitle_track <<table>> {
+    playable_content_id: UUID <<FK>>
+    language: TEXT
+    --
+    PRIMARY(playable_content_id, language)
+}
+
+playable_content "1" <-- "0..*" subtitle_track
 
 ' ===== MOVIE =====
 class movie <<table>> {
@@ -56,7 +65,15 @@ class movie <<table>> {
 
 movie "1" --> "1" media_work
 
-' TODO: add features
+class movie_feature <<table>> {
+     movie_id: UUID <<FK>>
+     playable_content_id: UUID <<FK>>
+     --
+     PRIMARY(movie_id, content_id)
+}
+
+movie "1" <-- "0..*" movie_feature
+playable_content "1" <-- "0..*" movie_feature
 
 ' ===== TV =====
 class tv <<table>> {
@@ -71,8 +88,8 @@ class season <<table>> {
     id: UUID <<PK>>
     tv_id: UUID <<FK>>
     season_number: INT
-    title: TEXT (nullable)
-    description: TEXT (nullable)
+    title: TEXT
+    description: TEXT
     --
     UNIQUE(tv_id, season_number)
 }
@@ -82,15 +99,16 @@ tv "1" <-- "0..*" season
 class episode <<table>> {
     id: UUID <<PK>>
     season_id: UUID <<FK>>
-    content_id: UUID <<FK>>
-    episode_number: INT (nullable))
+    playable_content_id: UUID <<FK>>
+    episode_number: INT
     air_date: DATE
-    role: TEXT (nullable)
+    role: TEXT
     --
     UNIQUE(season_id, episode_number)
 }
 
 season "1" <-- "0..*" episode
+playable_content "1" <-- "0..*" episode
 
 ' ===== CROSS-AGGREGATE REFERENCE =====
 contributor "1" <-- "0..*" contribution

@@ -8,17 +8,48 @@ class edition <<table>> {
     packaging: TEXT
 }
 
+class media_carrier <<table>> {
+    id: UUID <<PK>>
+    edition_id: UUID <<FK>>
+    title: TEXT
+}
+
+edition "1" <-- "0..*" media_carrier
+
+class disc_carrier <<table>> {
+    media_carrier_id: UUID <<PK>> <<FK>>
+    disc_type: TEXT
+}
+
+media_carrier "1" <-- "1" disc_carrier
+
+class disc_region_code <<table>> {
+    disc_carrier_id: UUID <<FK>>
+    region_code: TEXT
+    --
+    PRIMARY(disc_carrier_id, region_code)
+}
+
+disc_carrier "1" <-- "0..*" disc_region_code
+
+class digital_carrier <<table>> {
+    media_carrier_id: UUID <<PK>> <<FK>>
+    digital_type: TEXT
+    platform: TEXT
+}
+
+media_carrier "1" <-- "1" digital_carrier
+
 class edition_content <<table>> {
     edition_id: UUID <<FK>>
     content_id: UUID <<FK>>
+    media_carrier_id: UUID <<FK>>
     content_role: TEXT
     --
     PRIMARY(edition_id, content_id)
 }
 
 edition "1" <-- "0..*" edition_content
-
-' TODO: carrier and region codes, mediaworks
 
 ' ===== CROSS-AGGREGATE REFERENCE =====
 content "1" <-- "0..*" edition_content
