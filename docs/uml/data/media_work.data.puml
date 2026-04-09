@@ -7,6 +7,7 @@ class media_work <<table>> {
     title: TEXT
     description: TEXT
     original_release_date: DATE
+    type: TEXT
 }
 
 ' ===== CONTRIBUTIONS =====
@@ -16,7 +17,7 @@ class contribution <<table>> {
     contributor_id: UUID <<FK>>
     contributor_role: TEXT
     --
-    UNIQUE(media_work_id, contributor_id, role)
+    UNIQUE(media_work_id, contributor_id, contributor_role)
 }
 
 media_work "1" <-- "0..*" contribution
