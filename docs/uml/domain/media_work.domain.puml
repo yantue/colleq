@@ -7,7 +7,7 @@ class MediaWork <<AggregateRoot>> {
     +Title: string
     +Description?: string
     +OriginalReleaseDate: LocalDate
-    #creatorRoles: List<CreatorRole>
+    #creatorRoles: List<string>
     -_contributions: List<Contribution>
     -_content: List<Content>
     --

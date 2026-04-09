@@ -5,7 +5,7 @@ skinparam classAttributeIconSize 0
 class media_work <<table>> {
     id: UUID <<PK>>
     title: TEXT
-    description: TEXT
+    description: TEXT?
     original_release_date: DATE
     type: TEXT
 }
@@ -26,8 +26,8 @@ media_work "1" <-- "0..*" contribution
 class content <<table>> {
     id: UUID <<PK>>
     media_work_id: UUID <<FK>>
-    title: TEXT
-    description: TEXT
+    title: TEXT?
+    description: TEXT?
 }
 
 media_work <-- content
@@ -35,7 +35,7 @@ media_work <-- content
 class playable_content <<table>> {
     content_id: UUID <<PK>> <<FK>>
     runtime_minutes: INT
-    cut_type: TEXT
+    cut_type: CutType?
 }
 
 content <-- playable_content
@@ -69,6 +69,7 @@ movie "1" --> "1" media_work
 class movie_feature <<table>> {
      movie_id: UUID <<FK>>
      playable_content_id: UUID <<FK>>
+     sort_index: INT
      --
      PRIMARY(movie_id, content_id)
 }
@@ -79,8 +80,8 @@ playable_content "1" <-- "0..*" movie_feature
 ' ===== TV =====
 class tv <<table>> {
     media_work_id: UUID <<PK>> <<FK>>
-    status: TEXT
-    ended_on: TEXT
+    status: TVStatus
+    ended_on: DATE?
 }
 
 tv "1" --> "1" media_work
@@ -89,8 +90,8 @@ class season <<table>> {
     id: UUID <<PK>>
     tv_id: UUID <<FK>>
     season_number: INT
-    title: TEXT
-    description: TEXT
+    title: TEXT?
+    description: TEXT?
     --
     UNIQUE(tv_id, season_number)
 }
@@ -101,9 +102,9 @@ class episode <<table>> {
     id: UUID <<PK>>
     season_id: UUID <<FK>>
     playable_content_id: UUID <<FK>>
-    episode_number: INT
+    episode_number: INT?
     air_date: DATE
-    role: TEXT
+    role: EpisodeRole?
     --
     UNIQUE(season_id, episode_number)
 }

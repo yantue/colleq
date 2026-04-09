@@ -5,7 +5,7 @@ class media_copy <<table>> {
     id: UUID <<PK>>
     edition_id: UUID <<FK>>
     location_name: TEXT
-    date_added: DATE
+    date_added: DATE?
     created_at: TIMESTAMP
 }
 
