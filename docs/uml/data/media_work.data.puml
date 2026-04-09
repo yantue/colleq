@@ -56,7 +56,7 @@ class subtitle_track <<table>> {
     region: TEXT?
     type: SubtitleType
     --
-    PRIMARY(playable_content_id, language)
+    PRIMARY(playable_content_id, language, region, type)
 }
 
 playable_content "1" <-- "0..*" subtitle_track
