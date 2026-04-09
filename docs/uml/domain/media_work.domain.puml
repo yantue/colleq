@@ -69,14 +69,37 @@ enum CutType {
 Content <|-- PlayableContent
 
 class AudioTrack <<ValueObject>> {
-    +Language: string
-    +Format: string
+    +Language: Language
+    +Format: AudioFormat
+}
+
+enum AudioFormat {
+    AAC
+    DTS
+    DolbyDigital
+    DolbyAtmos
+}
+
+class Language <<ValueObject>> {
+    +Code: string
 }
 
 PlayableContent "1" *-- "0..*" AudioTrack
 
 class SubtitleTrack <<ValueObject>> {
-    +Language: string
+    +Language: Language
+    +Region?: Region
+    +Type: SubtitleType
+}
+
+enum SubtitleType {
+    Standard
+    SDH
+    CC
+}
+
+class Region <<ValueObject>> {
+    +Code: string
 }
 
 PlayableContent "1" *-- "0..*" SubtitleTrack

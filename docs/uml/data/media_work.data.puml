@@ -43,7 +43,7 @@ content <-- playable_content
 class audio_track <<table>> {
     playable_content_id: UUID <<FK>>
     language: TEXT
-    format: TEXT
+    format: AudioFormat
     --
     PRIMARY(playable_content_id, language, format)
 }
@@ -53,6 +53,8 @@ playable_content "1" <-- "0..*" audio_track
 class subtitle_track <<table>> {
     playable_content_id: UUID <<FK>>
     language: TEXT
+    region: TEXT?
+    type: SubtitleType
     --
     PRIMARY(playable_content_id, language)
 }
