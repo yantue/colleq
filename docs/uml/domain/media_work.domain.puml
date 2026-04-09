@@ -7,6 +7,8 @@ class MediaWork <<AggregateRoot>> {
     +Title: string
     +Description?: string
     +OriginalReleaseDate: LocalDate
+    +OriginalLanguage: Language
+    +CountryOfOrigin: Country
     #creatorRoles: List<string>
     -_contributions: List<Contribution>
     -_content: List<Content>
@@ -26,6 +28,10 @@ Invariant:
   Content that is a PlayableContent inside
   MediaWork._contents
 end note
+
+class Country <<ValueObject>> {
+    Code: string
+}
 
 ' ===== CONTRIBUTIONS =====
 class Contribution <<Entity>> {

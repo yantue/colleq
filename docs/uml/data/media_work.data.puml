@@ -7,6 +7,8 @@ class media_work <<table>> {
     title: TEXT
     description: TEXT?
     original_release_date: DATE
+    original_language: TEXT
+    country_of_origin: TEXT
     type: TEXT
 }
 
