@@ -76,14 +76,27 @@ Content <|-- PlayableContent
 
 class AudioTrack <<ValueObject>> {
     +Language: Language
-    +Format: AudioFormat
+    +Channels?: ChannelConfig
+    +Codec: AudioCodec
 }
 
-enum AudioFormat {
-    AAC
-    DTS
-    DolbyDigital
+class ChannelConfig <<ValueObject>> {
+    +name?: string
+    +Base?: int
+    +LFE?: int
+    +Height?: int
+}
+
+enum AudioCodec {
+    Auro3D
     DolbyAtmos
+    DolbyDigital
+    DolbyDigitalPlus
+    DolbyTrueHD
+    DTS
+    DTSHD
+    DTSX
+    LinearPCM
 }
 
 class Language <<ValueObject>> {

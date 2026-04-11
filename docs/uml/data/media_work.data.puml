@@ -52,12 +52,15 @@ content "1" <-- "1" playable_content
 class audio_track <<table>> {
     playable_content_id: UUID <<FK>>
     language: TEXT
-    format: AudioFormat
+    codec: AudioCodec
+    channels: ChannelConfig JSONB?
     --
-    PRIMARY(playable_content_id, language, format)
+    PRIMARY(playable_content_id, language, codec, channels)
 }
 
 playable_content "1" <-- "0..*" audio_track
+
+
 
 class subtitle_track <<table>> {
     playable_content_id: UUID <<FK>>
