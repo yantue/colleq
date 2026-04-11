@@ -14,6 +14,7 @@ class edition_media_work <<table>> {
     sort_index: INT
     --
     PRIMARY(edition_id, media_work_id)
+    UNIQUE(edition_id, sort_index)
 }
 
 edition "1" <-- "0.." edition_media_work
@@ -25,6 +26,7 @@ class edition_content <<table>> {
     sort_index: INT
     --
     PRIMARY(edition_id, content_id)
+    UNIQUE(edition_id, sort_index)
 }
 
 edition "1" <-- "0..*" edition_content
@@ -68,6 +70,7 @@ class media_carrier_content <<table>> {
     sort_index: INT
     --
     PRIMARY(media_carrier_id, content_id)
+    UNIQUE(media_carrier_id, sort_index)
 }
 
 media_carrier "1" <-- "0..*" media_carrier_content

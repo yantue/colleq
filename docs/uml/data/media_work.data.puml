@@ -17,12 +17,18 @@ class contribution <<table>> {
     id: UUID <<PK>>
     media_work_id: UUID <<FK>>
     contributor_id: UUID <<FK>>
-    contributor_role: TEXT
+    contributor_role_name: TEXT <<FK>>
     --
     UNIQUE(media_work_id, contributor_id, contributor_role)
 }
 
 media_work "1" <-- "0..*" contribution
+
+class contributor_role <<table>> {
+    name: TEXT <<PK>>
+}
+
+contributor_role "1" <-- "0..*" contribution
 
 ' ===== CONTENT =====
 class content <<table>> {
@@ -32,15 +38,16 @@ class content <<table>> {
     description: TEXT?
 }
 
-media_work <-- content
+media_work "1" <-- "0..*" content
 
 class playable_content <<table>> {
     content_id: UUID <<PK>> <<FK>>
     runtime_minutes: INT
     cut_type: CutType?
+    type: TEXT
 }
 
-content <-- playable_content
+content "1" <-- "1" playable_content
 
 class audio_track <<table>> {
     playable_content_id: UUID <<FK>>
@@ -75,7 +82,8 @@ class movie_feature <<table>> {
      playable_content_id: UUID <<FK>>
      sort_index: INT
      --
-     PRIMARY(movie_id, content_id)
+     PRIMARY(movie_id, playable_content_id)
+     UNIQUE(movie_id, sort_index)
 }
 
 movie "1" <-- "0..*" movie_feature
@@ -111,6 +119,7 @@ class episode <<table>> {
     role: EpisodeRole?
     --
     UNIQUE(season_id, episode_number)
+    WHERE episode_number IS NOT NULL
 }
 
 season "1" <-- "0..*" episode
