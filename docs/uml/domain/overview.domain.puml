@@ -53,8 +53,6 @@ EditionContent ..> Content : references
 
 ' ===== NOTES =====
 note right of MediaWork
-- MediaWork uses MediaStructure
-  polymorphism internally
 - Owns all Content related to
   this MediaWork
 end note

@@ -1,0 +1,134 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+' ===== CORE =====
+class media_work <<table>> {
+    id: UUID <<PK>>
+    title: TEXT
+    description: TEXT?
+    original_release_date: DATE
+    original_language: TEXT
+    country_of_origin: TEXT
+    type: TEXT
+}
+
+' ===== CONTRIBUTIONS =====
+class contribution <<table>> {
+    id: UUID <<PK>>
+    media_work_id: UUID <<FK>>
+    contributor_id: UUID <<FK>>
+    contributor_role_name: TEXT <<FK>>
+    --
+    UNIQUE(media_work_id, contributor_id, contributor_role)
+}
+
+media_work "1" <-- "0..*" contribution
+
+class contributor_role <<table>> {
+    name: TEXT <<PK>>
+}
+
+contributor_role "1" <-- "0..*" contribution
+
+' ===== CONTENT =====
+class content <<table>> {
+    id: UUID <<PK>>
+    media_work_id: UUID <<FK>>
+    title: TEXT?
+    description: TEXT?
+}
+
+media_work "1" <-- "0..*" content
+
+class playable_content <<table>> {
+    content_id: UUID <<PK>> <<FK>>
+    runtime_minutes: INT
+    cut_type: CutType?
+    type: TEXT
+}
+
+content "1" <-- "1" playable_content
+
+class audio_track <<table>> {
+    playable_content_id: UUID <<FK>>
+    language: TEXT
+    codec: AudioCodec
+    channels: ChannelConfig JSONB?
+    --
+    PRIMARY(playable_content_id, language, codec, channels)
+}
+
+playable_content "1" <-- "0..*" audio_track
+
+
+
+class subtitle_track <<table>> {
+    playable_content_id: UUID <<FK>>
+    language: TEXT
+    region: TEXT?
+    type: SubtitleType
+    --
+    PRIMARY(playable_content_id, language, region, type)
+}
+
+playable_content "1" <-- "0..*" subtitle_track
+
+' ===== MOVIE =====
+class movie <<table>> {
+    media_work_id: UUID <<PK>> <<FK>>
+}
+
+movie "1" --> "1" media_work
+
+class movie_feature <<table>> {
+     movie_id: UUID <<FK>>
+     playable_content_id: UUID <<FK>>
+     sort_index: INT
+     --
+     PRIMARY(movie_id, playable_content_id)
+     UNIQUE(movie_id, sort_index)
+}
+
+movie "1" <-- "0..*" movie_feature
+playable_content "1" <-- "0..*" movie_feature
+
+' ===== TV =====
+class tv <<table>> {
+    media_work_id: UUID <<PK>> <<FK>>
+    status: TVStatus
+    ended_on: DATE?
+}
+
+tv "1" --> "1" media_work
+
+class season <<table>> {
+    id: UUID <<PK>>
+    tv_id: UUID <<FK>>
+    season_number: INT
+    title: TEXT?
+    description: TEXT?
+    --
+    UNIQUE(tv_id, season_number)
+}
+
+tv "1" <-- "0..*" season
+
+class episode <<table>> {
+    id: UUID <<PK>>
+    season_id: UUID <<FK>>
+    playable_content_id: UUID <<FK>>
+    episode_number: INT?
+    air_date: DATE
+    role: EpisodeRole?
+    --
+    UNIQUE(season_id, episode_number)
+    WHERE episode_number IS NOT NULL
+}
+
+season "1" <-- "0..*" episode
+playable_content "1" <-- "0..*" episode
+
+' ===== CROSS-AGGREGATE REFERENCE =====
+contributor "1" <-- "0..*" contribution
+
+@enduml

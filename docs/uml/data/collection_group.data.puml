@@ -1,0 +1,24 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+class collection_group <<table>> {
+    id: UUID <<PK>>
+    title: TEXT
+}
+
+class collection_group_membership <<table>> {
+    id: UUID <<PK>>
+    collection_group_id: UUID <<FK>>
+    media_work_id: UUID <<FK>>
+    sort_index: INT
+    --
+    UNIQUE(collection_group_id, media_work_id)
+    UNIQUE(collection_group_id, sort_index)
+}
+
+collection_group "1" <-- "0..*" collection_group_membership
+
+' ===== CROSS-AGGREGATE REFERENCE =====
+media_work "1" <-- "0..*" collection_group_membership
+
+@enduml

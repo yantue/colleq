@@ -7,7 +7,9 @@ class MediaWork <<AggregateRoot>> {
     +Title: string
     +Description?: string
     +OriginalReleaseDate: LocalDate
-    -_structure: MediaStructure
+    +OriginalLanguage: Language
+    +CountryOfOrigin: Country
+    #creatorRoles: List<string>
     -_contributions: List<Contribution>
     -_content: List<Content>
     --
@@ -15,12 +17,11 @@ class MediaWork <<AggregateRoot>> {
     +RemoveContribution(id): void
     +AddContent(content): void
     +RemoveContent(id): void
+    +IsCreatorRole(role): bool
 }
 
 note top of MediaWork
 Invariant:
-- Must have exactly one MediaStructure
-- Structure defines the MediaWork type
 - Must have at least one creator contribution
 - Cannot remove last creator
 - All Features / Episodes must reference a
@@ -28,17 +29,8 @@ Invariant:
   MediaWork._contents
 end note
 
-abstract class MediaStructure <<Entity>> {
-    --
-    +Type(): MediaWorkType
-    +IsCreatorRole(role): bool
-}
-
-MediaWork "1" *-- "1" MediaStructure
-
-enum MediaWorkType {
-    Movie
-    TV
+class Country <<ValueObject>> {
+    Code: string
 }
 
 ' ===== CONTRIBUTIONS =====
@@ -66,7 +58,6 @@ MediaWork "1" *-- "0..*" Content
 class PlayableContent {
     +RuntimeMinutes: int
     +CutType?: CutType
-    +SubtitleTracks: List<string>
 }
 
 enum CutType {
@@ -84,25 +75,67 @@ enum CutType {
 Content <|-- PlayableContent
 
 class AudioTrack <<ValueObject>> {
-    +Language: string
-    +Format: string
+    +Language: Language
+    +Channels?: ChannelConfig
+    +Codec: AudioCodec
+}
+
+class ChannelConfig <<ValueObject>> {
+    +name?: string
+    +Base?: int
+    +LFE?: int
+    +Height?: int
+}
+
+enum AudioCodec {
+    Auro3D
+    DolbyAtmos
+    DolbyDigital
+    DolbyDigitalPlus
+    DolbyTrueHD
+    DTS
+    DTSHD
+    DTSX
+    LinearPCM
+}
+
+class Language <<ValueObject>> {
+    +Code: string
 }
 
 PlayableContent "1" *-- "0..*" AudioTrack
 
+class SubtitleTrack <<ValueObject>> {
+    +Language: Language
+    +Region?: Region
+    +Type: SubtitleType
+}
+
+enum SubtitleType {
+    Standard
+    SDH
+    CC
+}
+
+class Region <<ValueObject>> {
+    +Code: string
+}
+
+PlayableContent "1" *-- "0..*" SubtitleTrack
+
 ' ===== MOVIE =====
-class MovieStructure {
+class Movie {
     -_features: List<UUID>
     --
     +AddFeature(id): void
     +RemoveFeature(id): void
 }
 
-MediaStructure <|-- MovieStructure
-MovieStructure ..> PlayableContent
+MediaWork <|-- Movie
+Movie ..> PlayableContent
 
 ' ===== TV =====
-class TVStructure {
+class TV {
     +Status: TVStatus
     +EndedOn?: LocalDate
     -_seasons: List<UUID>
@@ -113,7 +146,7 @@ class TVStructure {
     +RemoveEpisodeFromSeason(seasonId, episodeId)
 }
 
-MediaStructure <|-- TVStructure
+MediaWork <|-- TV
 
 enum TVStatus {
     Ongoing
@@ -133,13 +166,13 @@ class Season <<Entity>> {
     +RemoveEpisode(id)
 }
 
-TVStructure "1" *-- "1..*" Season
+TV "1" *-- "1..*" Season
 
 class Episode <<Entity>> {
     +contentId: UUID
     +EpisodeNumber?: int
     +AirDate: LocalDate
-    +EpisodeRole?: EpisodeRole;
+    +EpisodeRole?: EpisodeRole
 }
 
 Season "1" *-- "1..*" Episode

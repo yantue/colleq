@@ -1,0 +1,83 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+class edition <<table>> {
+    id: UUID <<PK>>
+    title: TEXT
+    release_date: DATE
+    packaging: MediaPackaging?
+}
+
+class edition_media_work <<table>> {
+    edition_id: UUID <<FK>>
+    media_work_id: UUID <<FK>>
+    sort_index: INT
+    --
+    PRIMARY(edition_id, media_work_id)
+    UNIQUE(edition_id, sort_index)
+}
+
+edition "1" <-- "0.." edition_media_work
+
+class edition_content <<table>> {
+    edition_id: UUID <<FK>>
+    content_id: UUID <<FK>>
+    content_role: ContentRole
+    sort_index: INT
+    --
+    PRIMARY(edition_id, content_id)
+    UNIQUE(edition_id, sort_index)
+}
+
+edition "1" <-- "0..*" edition_content
+
+class media_carrier <<table>> {
+    id: UUID <<PK>>
+    edition_id: UUID <<FK>>
+    title: TEXT?
+    type: TEXT
+}
+
+edition "1" <-- "0..*" media_carrier
+
+class disc_carrier <<table>> {
+    media_carrier_id: UUID <<PK>> <<FK>>
+    disc_type: DiscType
+}
+
+media_carrier "1" <-- "1" disc_carrier
+
+class disc_region_code <<table>> {
+    disc_carrier_id: UUID <<FK>>
+    region_code: RegionCode
+    --
+    PRIMARY(disc_carrier_id, region_code)
+}
+
+disc_carrier "1" <-- "0..*" disc_region_code
+
+class digital_carrier <<table>> {
+    media_carrier_id: UUID <<PK>> <<FK>>
+    digital_type: DigitalType
+    platform: TEXT?
+}
+
+media_carrier "1" <-- "1" digital_carrier
+
+class media_carrier_content <<table>> {
+    media_carrier_id: UUID <<FK>>
+    content_id: UUID <<FK>>
+    sort_index: INT
+    --
+    PRIMARY(media_carrier_id, content_id)
+    UNIQUE(media_carrier_id, sort_index)
+}
+
+media_carrier "1" <-- "0..*" media_carrier_content
+
+' ===== CROSS-AGGREGATE REFERENCE =====
+media_work "1" <-- "0.." edition_media_work
+content "1" <-- "0..*" edition_content
+content "1" <-- "0..*" media_carrier_content
+
+@enduml

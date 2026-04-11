@@ -1,0 +1,10 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+!include collection_group.data.puml
+!include contributors.data.puml
+!include edition.data.puml
+!include media_copy.data.puml
+!include media_work.data.puml
+
+@enduml
