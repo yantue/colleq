@@ -17,18 +17,18 @@ class contribution <<table>> {
     id: UUID <<PK>>
     media_work_id: UUID <<FK>>
     contributor_id: UUID <<FK>>
-    contributor_role_name: TEXT <<FK>>
+    contribution_role_name: TEXT <<FK>>
     --
-    UNIQUE(media_work_id, contributor_id, contributor_role)
+    UNIQUE(media_work_id, contributor_id, contribution_role)
 }
 
 media_work "1" <-- "0..*" contribution
 
-class contributor_role <<table>> {
+class contribution_role <<table>> {
     name: TEXT <<PK>>
 }
 
-contributor_role "1" <-- "0..*" contribution
+contribution_role "1" <-- "0..*" contribution
 
 ' ===== CONTENT =====
 class content <<table>> {

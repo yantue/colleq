@@ -37,10 +37,10 @@ class Country <<ValueObject>> {
 class Contribution <<Entity>> {
     +Id: UUID
     +ContributorId: UUID
-    +ContributorRole: ContributorRole
+    +ContributionRole: ContributionRole
 }
 
-class ContributorRole <<ValueObject>> {
+class ContributionRole <<ValueObject>> {
     +Name: string
 }
 
