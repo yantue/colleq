@@ -18,7 +18,7 @@ reverse link Content to PlayableContent--><path d="M106.5,559.24 C106.5,559.24 1
 link MediaWork to Contribution--><path d="M283.5,414.03 C283.5,414.03 283.5,485.8 283.5,485.8 " fill="none" id="MediaWork-&gt;Contribution" style="stroke: #A80036; stroke-width: 1.0;"/><polygon fill="#A80036" points="283.5,490.8,287.5,481.8,283.5,485.8,279.5,481.8,283.5,490.8" style="stroke: #A80036; stroke-width: 1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="23" x="284.5" y="457.0669">has</text><!--MD5=[96eca555c283861625927cf39bbe0ece]
 link Contribution to Contributor--><path d="M283.5,539.24 C283.5,539.24 283.5,610.82 283.5,610.82 " fill="none" id="Contribution-&gt;Contributor" style="stroke: #A80036; stroke-width: 1.0;"/><polygon fill="#A80036" points="283.5,615.82,287.5,606.82,283.5,610.82,279.5,606.82,283.5,615.82" style="stroke: #A80036; stroke-width: 1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="15" x="284.5" y="582.0669">by</text><!--MD5=[3f96bd93655999fad9e6f036dbf8b5c0]
 link Edition to EditionContent--><path d="M57.67,257.27 C57.67,257.27 57.67,344.77 57.67,344.77 " fill="none" id="Edition-&gt;EditionContent" style="stroke: #A80036; stroke-width: 1.0;"/><polygon fill="#A80036" points="57.67,349.77,61.67,340.77,57.67,344.77,53.67,340.77,57.67,349.77" style="stroke: #A80036; stroke-width: 1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="167" x="75.5" y="300.0669">contains content mapping</text><!--MD5=[0ca8187d5fb681a72996edbf10bad70b]
-link EditionContent to Content--><path d="M103.25,398.24 C103.25,398.24 103.25,485.61 103.25,485.61 " fill="none" id="EditionContent-&gt;Content" style="stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 7.0,7.0;"/><polygon fill="#A80036" points="103.25,490.61,107.25,481.61,103.25,485.61,99.25,481.61,103.25,490.61" style="stroke: #A80036; stroke-width: 1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="68" x="91.5" y="457.0669">references</text><!--MD5=[bcdaad9064a814be7b2ef377aa6127a8]
+link EditionContent to Content--><path d="M103.25,398.24 C103.25,398.24 103.25,485.61 103.25,485.61 " fill="none" id="EditionContent-&gt;Content" style="stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 7.0,7.0;"/><polygon fill="#A80036" points="103.25,490.61,107.25,481.61,103.25,485.61,99.25,481.61,103.25,490.61" style="stroke: #A80036; stroke-width: 1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="68" x="91.5" y="457.0669">references</text><!--MD5=[89641aded22645aa341ff2f746e64d99]
 @startuml
 skinparam classAttributeIconSize 0
 skinparam linetype ortho
@@ -91,7 +91,7 @@ PlantUML version 1.2020.02(Sun Mar 01 10:22:07 UTC 2020)
 (GPL source distribution)
 Java Runtime: OpenJDK Runtime Environment
 JVM: OpenJDK 64-Bit Server VM
-Java Version: 17.0.18+8
+Java Version: 17.0.20.1+1
 Operating System: Linux
 Default Encoding: UTF-8
 Language: en

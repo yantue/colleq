@@ -20,7 +20,7 @@ link EditionContent to Content--><path d="M622.5,541.28 C622.5,564.56 622.5,593.
 link ContentRole to MediaPackaging--><!--MD5=[7dbeb9db8182683a606adfff4e108a5d]
 link MediaPackaging to DiscType--><!--MD5=[202219218c879fed4e9a8e652fc33ab4]
 link ContentRole to DigitalType--><!--MD5=[18dac58eb19f256c9d08cf089c6607f2]
-link DigitalType to RegionCode--><!--MD5=[37e5af7e4ab3c2ed17db20498855e581]
+link DigitalType to RegionCode--><!--MD5=[a07a1f12915e514ee097e364a23ecacc]
 @startuml
 skinparam classAttributeIconSize 0
 
@@ -117,7 +117,7 @@ PlantUML version 1.2020.02(Sun Mar 01 10:22:07 UTC 2020)
 (GPL source distribution)
 Java Runtime: OpenJDK Runtime Environment
 JVM: OpenJDK 64-Bit Server VM
-Java Version: 17.0.18+8
+Java Version: 17.0.20.1+1
 Operating System: Linux
 Default Encoding: UTF-8
 Language: en
