@@ -1,6 +1,6 @@
 ﻿using Colleq.Domain.Contributors;
 
-namespace Colleq.Domain.Tests;
+namespace Colleq.Domain.Tests.Contributors;
 
 public class ContributionRoleTests
 {
